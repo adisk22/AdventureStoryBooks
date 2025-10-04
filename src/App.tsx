@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import StoryCreation from "./pages/StoryCreation";
 import StoryContinuation from "./pages/StoryContinuation";
 import StoryCreate from "./pages/StoryCreate"
+import StoryFinish from "./pages/StoryFinish";
 
 import MyStories from "./pages/MyStories";
 import NotFound from "./pages/NotFound";
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/story-creation/:biomeId" element={<StoryCreation />} />
             <Route path="/my-stories" element={<MyStories />} />
             <Route path="/story-continuation/:storyId/:pageNum" element={<StoryContinuation/>} />
+            <Route path="/story-finish/:storyId/:pageNum" element={<StoryFinish />} />
             <Route path="/story-create/:biomeId" element={<StoryCreate />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

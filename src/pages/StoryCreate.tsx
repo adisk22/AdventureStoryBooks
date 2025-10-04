@@ -35,7 +35,7 @@ export default function StoryCreate() {
     biome: biomeId || ''
   });
 
-  const handleNext = () => {
+  const handleNext = async () => {
 		var storyID;
 
     const postStory = async () => {
@@ -47,8 +47,13 @@ export default function StoryCreate() {
 				biome: storyData.biome
 			}
 
+			console.log("story data" + storyData);
+
       try {
         storyID = await storyService.saveStory(newStory);
+
+				console.log("New story ID:", storyID);
+				postPage(storyID);
       } catch (err) {
 
       }
@@ -63,7 +68,11 @@ export default function StoryCreate() {
           biome: storyData.biome
         });
 
-				storyService.saveStoryPage(generatedPage, storyID);
+				generatedPage.page_number = 1;
+
+				await storyService.saveStoryPage(generatedPage, storyID);
+
+				navigate(`/story-continuation/${storyID}/1`);
 			} catch (err) {
 				console.error("Error generating or saving story page:", err);
 			}
@@ -71,9 +80,6 @@ export default function StoryCreate() {
 		}
 
     postStory();
-		postPage(storyID);
-
-		navigate(`/story-continuation/:${storyID}:/1`);
   };
 
 
@@ -104,10 +110,9 @@ export default function StoryCreate() {
             </div>
             <div className="flex items-center gap-2">
 							<PenTool className="w-5 h-5" />;
-              <span className="text-sm font-medium">Story Title & Beginning</span>
             </div>
           </div>
-          <Progress value={(1 / 4) * 100} className="mt-4" />
+          <Progress value={(1 / 3) * 100} className="mt-4" />
         </div>
       </div>
 

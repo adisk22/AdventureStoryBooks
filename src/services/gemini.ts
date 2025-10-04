@@ -305,6 +305,7 @@ Return as JSON:
     }
   },
 
+
   async generatePartOfStory(data: {
     title: string;
     beginning: string;
@@ -315,10 +316,7 @@ Return as JSON:
       console.log('Using mock Gemini Storybook service (no API key provided)');
       return {
         "page_number": 1,
-        "text_content": "User's story content formatted for children's book",
-        "continuation_option_1": "First possible continuation option",
-        "continuation_option_2": "Second possible continuation option",
-        "continuation_option_3": "Third possible continuation option"
+        "text_content": "User's story content formatted for children's book"
       };
     }
 
@@ -338,35 +336,31 @@ Continuation: "${data.continuation}"
 Setting: ${data.biome}
 
 STORYBOOK STYLE REQUIREMENTS:
-- Create around 3 to 5 sentences using the user story
-- Create exactly 1 page worth of content
+- Create around 2 to 3 sentences using the user story
 - Use the user's exact story content as the foundation
 - Each page should have engaging text
-- Maintain the user's original narrative and characters
+- Maintain the user's original narrative and characters as shown in ${data.beginning}
+- Ensure that each plot point connects logically to the next
 - Age-appropriate for children 6-10 years old
 - Wholesome, positive imagery only
 - Ensure the story matches the ${data.biome} environment setting
 
-CONTINUATION REQUIREMENTS:
-- Create 3 to 4 possible branches for the story to continue
-- Each branch should be 1 to 2 sentences long
-- Branches should be engaging and encourage creativity
-- Branches should fit naturally with the story so far
+RETURN REQUIREMENTS:
+- Keep text_content as only the new generated piece. It should not contain text from ${data.beginning} and ${data.continuation}
+- ${data.beginning} and ${data.continuation} should be used to help generate the new text, but not be part of it
 
 Return as JSON:
 {
   "page_number": 1,
   "text_content": "User's story content formatted for children's book",
-  "continuation_option_1": "First possible continuation option",
-  "continuation_option_2": "Second possible continuation option",
-  "continuation_option_3": "Third possible continuation option"
 }`;
 
       console.log('📤 Sending storybook prompt to Gemini...');
       const result = await model.generateContent(storybookPrompt);
       const response = await result.response;
       
-      const text = response.text();
+      var text = response.text();
+      text = text.replace(/```(json)?/g, "").trim();
       
       console.log('📥 Received storybook response from Gemini:', text);
 
@@ -387,11 +381,8 @@ Return as JSON:
     } catch (error) {
       return {
         "page_number": 1,
-        "text_content": "User's story content formatted for children's book",
-        "continuation_option_1": "First possible continuation option",
-        "continuation_option_2": "Second possible continuation option",
-        "continuation_option_3": "Third possible continuation option"
+        "text_content": "User's story content formatted for children's book"
       };
     }
-  },
+  }
 };

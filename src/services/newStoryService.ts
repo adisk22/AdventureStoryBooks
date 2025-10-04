@@ -7,6 +7,7 @@ import type { UnprocessedStory } from '@/models/models';
 type Biome = Database["public"]["Tables"]["biomes"]["Row"];
 type savedStories = Database["public"]["Tables"]["savedStories"]["Row"];
 type storyPagesToStoryInsert = Database["public"]["Tables"]["storyPagesToStory"]["Insert"];
+type storyPagesToStory = Database["public"]["Tables"]["storyPagesToStory"]["Row"];
 
 
 export interface StoryStats {
@@ -22,25 +23,30 @@ class newStoryService {
 
     // STORIES
     async saveStory (StoryData: Partial<savedStories>) {
+        console.log(StoryData);
+
         try {
             const { data, error } = await supabase
                 .from("savedStories") // your table name
                 .insert([StoryData])
-                .select(); // optional: returns inserted row
+                .select("id"); // optional: returns inserted row
 
+            console.log(data);
+            
+            
             if (error) {
                 console.error("Error saving story:", error.message);
                 return null;
             }
 
-            return data?.[0]; // returns the inserted story
+            return data?.[0].id; // returns the inserted story
         } catch (err) {
             console.error("Unexpected error saving story:", err);
             return null;
         }
     }
 
-    async getStoryBiome (storyID: number) {
+    async getStoryBiome (storyID: number): Promise<string | null> {
         try 
         {
             const { data, error } = await supabase
@@ -73,13 +79,8 @@ class newStoryService {
                 text: PageData.text_content,
                 imageUrl: "", 
                 nextPrompt: "",
-                continuation_option_1: PageData.continuation_option_1 ?? null,
-                continuation_option_2: PageData.continuation_option_2 ?? null,
-                continuation_option_3: PageData.continuation_option_3 ?? null,
                 biome: biome ?? "",
-                // no `id` needed — it's optional in Insert
             };
-                        
             
             const { data, error } = await supabase
                 .from("storyPagesToStory") // your table name
@@ -98,12 +99,23 @@ class newStoryService {
         }
     }
     
-    async getStoryToStudent () {
+    async getStoryPages(storyID: number): Promise<storyPagesToStory[] | null> {
+        
+        console.log("STORY ID IN SERVICE:", storyID);
+        
+        try {
+            const { data, error } = await supabase
+                .from("storyPagesToStory")                      
+                .select("*")                                     
+                .eq("storyID", storyID)                          
+                .order("pageNum", { ascending: true });          
 
-    }
-
-    async getStoryImages () {
-
+            console.log(data);
+            return data ?? [];
+        } catch (err) {
+            console.error("Unexpected error fetching story pages:", err);
+            return null;
+        }
     }
 
     async getBiomes(): Promise<Biome[]> {
@@ -124,9 +136,19 @@ class newStoryService {
         }
     }
 
+    async getStoryTitle(storyID: number): Promise<string | null> {
+        try {
+            const { data, error } = await supabase
+                .from("savedStories")   // your table
+                .select("title")        // only fetch title column
+                .eq("id", storyID)      // filter by id
+                .single();              // expect exactly one row   
 
-    async getLiteraryGoals () {
-
+            return data.title ?? null;
+        } catch (err) {
+            console.error("Unexpected error in getStoryTitle:", err);
+            return null;
+        }
     }
     
 }

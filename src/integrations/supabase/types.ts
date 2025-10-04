@@ -260,9 +260,6 @@ export type Database = {
       storyPagesToStory: {
         Row: {
           biome: string | null
-          continuation_option_1: string | null
-          continuation_option_2: string | null
-          continuation_option_3: string | null
           id: number
           imageUrl: string | null
           nextPrompt: string | null
@@ -272,9 +269,6 @@ export type Database = {
         }
         Insert: {
           biome?: string | null
-          continuation_option_1?: string | null
-          continuation_option_2?: string | null
-          continuation_option_3?: string | null
           id?: number
           imageUrl?: string | null
           nextPrompt?: string | null
@@ -284,9 +278,6 @@ export type Database = {
         }
         Update: {
           biome?: string | null
-          continuation_option_1?: string | null
-          continuation_option_2?: string | null
-          continuation_option_3?: string | null
           id?: number
           imageUrl?: string | null
           nextPrompt?: string | null
