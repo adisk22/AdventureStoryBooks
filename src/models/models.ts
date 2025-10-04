@@ -13,3 +13,7 @@ export interface storyPagesToStory {
     storyID: number | null
     text: string | null
 }
+
+export interface ContainsProfanity {
+    profanity: boolean;
+}
