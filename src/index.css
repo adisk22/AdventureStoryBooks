@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 35 30% 96%;
+    --foreground: 25 20% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 25 20% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 25 20% 15%;
+
+    --primary: 250 70% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 280 50% 95%;
+    --secondary-foreground: 250 70% 30%;
+
+    --muted: 35 20% 90%;
+    --muted-foreground: 25 10% 50%;
+
+    --accent: 280 60% 65%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 35 20% 85%;
+    --input: 35 20% 85%;
+    --ring: 250 70% 60%;
+
+    --radius: 1rem;
+    
+    --forest: 140 60% 50%;
+    --forest-light: 140 50% 85%;
+    --desert: 35 80% 60%;
+    --desert-light: 35 70% 90%;
+    --ocean: 210 80% 55%;
+    --ocean-light: 210 60% 90%;
+    --tundra: 200 60% 70%;
+    --tundra-light: 200 40% 92%;
+    --mountains: 220 15% 45%;
+    --mountains-light: 220 10% 88%;
+    
+    --success: 142 70% 45%;
+    --warning: 38 92% 50%;
+    
+    --gradient-primary: linear-gradient(135deg, hsl(250 70% 60%) 0%, hsl(280 60% 65%) 100%);
+    --gradient-forest: linear-gradient(135deg, hsl(140 60% 50%) 0%, hsl(160 55% 45%) 100%);
+    --gradient-desert: linear-gradient(135deg, hsl(35 80% 60%) 0%, hsl(25 75% 55%) 100%);
+    --gradient-ocean: linear-gradient(135deg, hsl(210 80% 55%) 0%, hsl(195 75% 50%) 100%);
+    --gradient-tundra: linear-gradient(135deg, hsl(200 60% 70%) 0%, hsl(190 55% 75%) 100%);
+    --gradient-mountains: linear-gradient(135deg, hsl(220 15% 45%) 0%, hsl(210 20% 40%) 100%);
+    
+    --shadow-sm: 0 2px 8px hsl(250 70% 60% / 0.1);
+    --shadow-md: 0 4px 16px hsl(250 70% 60% / 0.15);
+    --shadow-lg: 0 8px 24px hsl(250 70% 60% / 0.2);
+    --shadow-xl: 0 12px 32px hsl(250 70% 60% / 0.25);
+    
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 25 20% 10%;
+    --foreground: 35 30% 96%;
+
+    --card: 25 20% 12%;
+    --card-foreground: 35 30% 96%;
+
+    --popover: 25 20% 12%;
+    --popover-foreground: 35 30% 96%;
+
+    --primary: 250 70% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 280 20% 20%;
+    --secondary-foreground: 280 50% 90%;
+
+    --muted: 25 15% 18%;
+    --muted-foreground: 35 15% 60%;
+
+    --accent: 280 60% 65%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 25 15% 25%;
+    --input: 25 15% 25%;
+    --ring: 250 70% 60%;
+    
+    --sidebar-background: 25 20% 10%;
+    --sidebar-foreground: 35 30% 96%;
+    --sidebar-primary: 250 70% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 25 15% 18%;
+    --sidebar-accent-foreground: 35 30% 96%;
+    --sidebar-border: 25 15% 25%;
+    --sidebar-ring: 250 70% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Nunito', sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Nunito', sans-serif;
+  }
+}
