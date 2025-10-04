@@ -22,7 +22,7 @@ export const BiomeDetailPanel = ({ biome, open, onClose }: BiomeDetailPanelProps
 
   const handleCreateStory = () => {
     console.log('📝 Create story clicked for biome:', biome.name);
-    navigate(`/story-creation/${biome.id}`);
+    navigate(`/story-create/${biome.id}`);
     onClose(); // Close the panel when navigating
   };
 

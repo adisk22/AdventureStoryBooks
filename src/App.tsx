@@ -5,7 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { DemoAuthProvider } from "@/contexts/DemoAuthContext";
 import Index from "./pages/Index";
+
+// Creating a story
 import StoryCreation from "./pages/StoryCreation";
+import StoryContinuation from "./pages/StoryContinuation";
+import StoryCreate from "./pages/StoryCreate"
+
 import MyStories from "./pages/MyStories";
 import NotFound from "./pages/NotFound";
 
@@ -22,7 +27,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/story-creation/:biomeId" element={<StoryCreation />} />
             <Route path="/my-stories" element={<MyStories />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="/story-continuation/:storyId/:pageNum" element={<StoryContinuation/>} />
+            <Route path="/story-create/:biomeId" element={<StoryCreate />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

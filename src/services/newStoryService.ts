@@ -1,34 +1,13 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 import type { GeneratedStory } from '@/services/gemini';
+import type { UnprocessedStory } from '@/models/models';
 
 // TYPES
 type Biome = Database["public"]["Tables"]["biomes"]["Row"];
+type savedStories = Database["public"]["Tables"]["savedStories"]["Row"];
+type storyPagesToStoryInsert = Database["public"]["Tables"]["storyPagesToStory"]["Insert"];
 
-export interface Story {
-  id: string;
-  title: string;
-  author_id: string;
-  biome_id: string;
-  status: 'draft' | 'published' | 'archived';
-  content: GeneratedStory;
-  created_at: string;
-  updated_at: string;
-  published_at?: string;
-  likes_count: number;
-  views_count: number;
-}
-
-export interface StoryDraft {
-  id: string;
-  title: string;
-  beginning: string;
-  continuation: string;
-  biome: string;
-  status: 'draft';
-  created_at: string;
-  updated_at: string;
-}
 
 export interface StoryStats {
   total_stories: number;
@@ -42,12 +21,81 @@ export interface StoryStats {
 class newStoryService {
 
     // STORIES
-    async saveStoryToStudent () {
+    async saveStory (StoryData: Partial<savedStories>) {
+        try {
+            const { data, error } = await supabase
+                .from("savedStories") // your table name
+                .insert([StoryData])
+                .select(); // optional: returns inserted row
 
+            if (error) {
+                console.error("Error saving story:", error.message);
+                return null;
+            }
+
+            return data?.[0]; // returns the inserted story
+        } catch (err) {
+            console.error("Unexpected error saving story:", err);
+            return null;
+        }
     }
 
-    async saveStoryImages () {
+    async getStoryBiome (storyID: number) {
+        try 
+        {
+            const { data, error } = await supabase
+                .from("savedStories")   // your table
+                .select("biome")        // only fetch biome column
+                .eq("id", storyID)      // filter by id
+                .single();              // expect exactly one row
 
+            if (error) {
+                console.error("Error fetching story biome:", error.message);
+                return null;
+            }
+
+                return data?.biome ?? null; // return just the biome value
+        } 
+        catch (err) 
+        {
+                console.error("Unexpected error in getStoryBiome:", err);
+                return null;
+        }
+    }
+
+    async saveStoryPage (PageData: Partial<UnprocessedStory>, storyID: number) {
+        var biome = await this.getStoryBiome(storyID);
+
+        try {
+            const completePageData: storyPagesToStoryInsert = {
+                storyID: storyID,
+                pageNum: PageData.page_number,
+                text: PageData.text_content,
+                imageUrl: "", 
+                nextPrompt: "",
+                continuation_option_1: PageData.continuation_option_1 ?? null,
+                continuation_option_2: PageData.continuation_option_2 ?? null,
+                continuation_option_3: PageData.continuation_option_3 ?? null,
+                biome: biome ?? "",
+                // no `id` needed — it's optional in Insert
+            };
+                        
+            
+            const { data, error } = await supabase
+                .from("storyPagesToStory") // your table name
+                .insert([completePageData])
+                .select(); // optional: returns inserted row
+
+            if (error) {
+                console.error("Error saving story:", error.message);
+                return null;
+            }
+
+            return data?.[0]; // returns the inserted story
+        } catch (err) {
+            console.error("Unexpected error saving story:", err);
+            return null;
+        }
     }
     
     async getStoryToStudent () {

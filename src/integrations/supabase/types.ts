@@ -133,6 +133,30 @@ export type Database = {
         }
         Relationships: []
       }
+      savedStories: {
+        Row: {
+          beginningPrompt: string | null
+          biome: string | null
+          created_at: string
+          id: number
+          title: string | null
+        }
+        Insert: {
+          beginningPrompt?: string | null
+          biome?: string | null
+          created_at?: string
+          id?: number
+          title?: string | null
+        }
+        Update: {
+          beginningPrompt?: string | null
+          biome?: string | null
+          created_at?: string
+          id?: number
+          title?: string | null
+        }
+        Relationships: []
+      }
       stories: {
         Row: {
           author_id: string
@@ -229,6 +253,53 @@ export type Database = {
             columns: ["story_id"]
             isOneToOne: false
             referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      storyPagesToStory: {
+        Row: {
+          biome: string | null
+          continuation_option_1: string | null
+          continuation_option_2: string | null
+          continuation_option_3: string | null
+          id: number
+          imageUrl: string | null
+          nextPrompt: string | null
+          pageNum: number | null
+          storyID: number | null
+          text: string | null
+        }
+        Insert: {
+          biome?: string | null
+          continuation_option_1?: string | null
+          continuation_option_2?: string | null
+          continuation_option_3?: string | null
+          id?: number
+          imageUrl?: string | null
+          nextPrompt?: string | null
+          pageNum?: number | null
+          storyID?: number | null
+          text?: string | null
+        }
+        Update: {
+          biome?: string | null
+          continuation_option_1?: string | null
+          continuation_option_2?: string | null
+          continuation_option_3?: string | null
+          id?: number
+          imageUrl?: string | null
+          nextPrompt?: string | null
+          pageNum?: number | null
+          storyID?: number | null
+          text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "storyPagesToStory_storyID_fkey"
+            columns: ["storyID"]
+            isOneToOne: false
+            referencedRelation: "savedStories"
             referencedColumns: ["id"]
           },
         ]

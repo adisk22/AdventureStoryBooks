@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { UnprocessedStory } from '@/models/models';
 
 // Ensure your .env.local has VITE_GEMINI_API_KEY
 const GEMINI_API_KEY = 'AIzaSyDGIyVMpCIhgzRPV8zkgh99uqeGGeTPf6I'
@@ -301,6 +302,96 @@ Return as JSON:
     } catch (error) {
       console.error('❌ Error analyzing photos:', error);
       return mockGeminiResponses.analyzePhotos(photos);
+    }
+  },
+
+  async generatePartOfStory(data: {
+    title: string;
+    beginning: string;
+    continuation: string;
+    biome: string;
+  }): Promise<UnprocessedStory> {
+    if (!GEMINI_API_KEY || !genAI) {
+      console.log('Using mock Gemini Storybook service (no API key provided)');
+      return {
+        "page_number": 1,
+        "text_content": "User's story content formatted for children's book",
+        "continuation_option_1": "First possible continuation option",
+        "continuation_option_2": "Second possible continuation option",
+        "continuation_option_3": "Third possible continuation option"
+      };
+    }
+
+    try {
+      console.log('📚 Generating storybook with Gemini Storybook API...');
+      
+      // Use Gemini 2.0 Flash for storybook generation
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      
+      // Create a simple prompt that uses the user's exact content with storybook styling
+      const storybookPrompt = `Transform the following prompt into a single page of a professional children's storybook
+
+USER STORY:
+Title: "${data.title}"
+Beginning: "${data.beginning}"
+Continuation: "${data.continuation}"
+Setting: ${data.biome}
+
+STORYBOOK STYLE REQUIREMENTS:
+- Create around 3 to 5 sentences using the user story
+- Create exactly 1 page worth of content
+- Use the user's exact story content as the foundation
+- Each page should have engaging text
+- Maintain the user's original narrative and characters
+- Age-appropriate for children 6-10 years old
+- Wholesome, positive imagery only
+- Ensure the story matches the ${data.biome} environment setting
+
+CONTINUATION REQUIREMENTS:
+- Create 3 to 4 possible branches for the story to continue
+- Each branch should be 1 to 2 sentences long
+- Branches should be engaging and encourage creativity
+- Branches should fit naturally with the story so far
+
+Return as JSON:
+{
+  "page_number": 1,
+  "text_content": "User's story content formatted for children's book",
+  "continuation_option_1": "First possible continuation option",
+  "continuation_option_2": "Second possible continuation option",
+  "continuation_option_3": "Third possible continuation option"
+}`;
+
+      console.log('📤 Sending storybook prompt to Gemini...');
+      const result = await model.generateContent(storybookPrompt);
+      const response = await result.response;
+      
+      const text = response.text();
+      
+      console.log('📥 Received storybook response from Gemini:', text);
+
+      // Parse the JSON response
+      let storybookJson: UnprocessedStory;
+      try {
+        storybookJson = JSON.parse(text) as UnprocessedStory;
+        console.log("✅ Parsed storybook:", storybookJson);
+      } catch (err) {
+        console.error("❌ Failed to parse Gemini response:", err);
+        throw err;
+      }
+      // Generate illustrations fo this page using Imagen
+      // const storybookWithImages = await this.generateStorybookImages(storybookJson.pages, data.biome);
+
+      return storybookJson;
+
+    } catch (error) {
+      return {
+        "page_number": 1,
+        "text_content": "User's story content formatted for children's book",
+        "continuation_option_1": "First possible continuation option",
+        "continuation_option_2": "Second possible continuation option",
+        "continuation_option_3": "Third possible continuation option"
+      };
     }
   },
 };
