@@ -219,9 +219,9 @@ export default function StoryCreation() {
                 <PenTool className="w-5 h-5" />
                 Story Title & Beginning
               </CardTitle>
-              <CardDescription>
-                Give your story a title and write the beginning (first 3-4 pages). This is where your characters are introduced and the adventure begins!
-              </CardDescription>
+               <CardDescription>
+                 Give your story a title and write the beginning. Your exact words will be transformed into a beautiful storybook!
+               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
@@ -275,7 +275,7 @@ export default function StoryCreation() {
                 Story Continuation
               </CardTitle>
               <CardDescription>
-                Now write how your story continues! This is where the main adventure happens, problems are solved, and the story reaches its exciting conclusion.
+                Continue your story! Write whatever comes next - your exact words will become part of the storybook.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -283,14 +283,14 @@ export default function StoryCreation() {
                 <Label htmlFor="continuation">Story Continuation</Label>
                 <Textarea
                   id="continuation"
-                  placeholder="Write the continuation of your story here... (middle and end)"
+                  placeholder="Write whatever comes next in your story..."
                   value={storyData.continuation}
                   onChange={(e) => handleInputChange('continuation', e.target.value)}
                   rows={8}
                   className="resize-none"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Tip: Include challenges, adventures, and a satisfying ending!
+                  Tip: Just write what happens next - Gemini will turn it into a beautiful storybook!
                 </p>
               </div>
               
@@ -320,7 +320,7 @@ export default function StoryCreation() {
                 Generate Your Storybook
               </CardTitle>
               <CardDescription>
-                Gemini Storybook will create a complete 10-page illustrated storybook with narration!
+                Gemini will transform your exact story into a beautiful illustrated storybook!
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -329,13 +329,13 @@ export default function StoryCreation() {
                   <div className="p-6 bg-primary/10 rounded-lg">
                     <h3 className="font-semibold mb-2">Ready to Create Your Storybook?</h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Gemini Storybook will analyze your story and create:
+                      Gemini will take your exact story and create:
                     </p>
                     <ul className="text-sm text-left space-y-1">
-                      <li>• A complete 10-page illustrated storybook</li>
-                      <li>• Beautiful custom illustrations for each page</li>
-                      <li>• Read-aloud narration for each page</li>
-                      <li>• PDF export for printing</li>
+                      <li>• A beautiful illustrated storybook using your words</li>
+                      <li>• Custom illustrations for each page</li>
+                      <li>• Professional children's book style</li>
+                      <li>• Your story, exactly as you wrote it</li>
                     </ul>
                   </div>
                   

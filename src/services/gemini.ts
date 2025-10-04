@@ -39,38 +39,38 @@ const mockGeminiResponses = {
       pages: [
         {
           page_number: 1,
-          text_content: `${data.beginning} The adventure was just beginning in the magical ${data.biome}.`,
-          illustration_prompt: `Professional children's storybook illustration: A magical scene in ${data.biome}, watercolor and gouache style, soft warm lighting, 8-year-old adventure hero exploring, wholesome imagery, hand-painted quality, 4:3 aspect ratio`,
+          text_content: data.beginning,
+          illustration_prompt: `Children's storybook illustration: ${data.beginning.substring(0, 100)}..., watercolor style, soft lighting, ${data.biome} setting`,
           image_url: `https://picsum.photos/400/300?random=1`
         },
         {
           page_number: 2,
-          text_content: `As the story continued, our heroes discovered amazing secrets hidden within the ${data.biome}.`,
-          illustration_prompt: `Professional children's storybook illustration: Heroes discovering secrets in ${data.biome}, watercolor and gouache style, soft warm lighting, 8-year-old adventure hero with curious expression, wholesome imagery, hand-painted quality, 4:3 aspect ratio`,
+          text_content: data.beginning + " The adventure continued...",
+          illustration_prompt: `Children's storybook illustration: Adventure scene in ${data.biome}, watercolor style, soft lighting`,
           image_url: `https://picsum.photos/400/300?random=2`
         },
         {
           page_number: 3,
-          text_content: `${data.continuation} The journey through the ${data.biome} had been filled with wonder and excitement.`,
-          illustration_prompt: `Professional children's storybook illustration: Journey through ${data.biome}, watercolor and gouache style, soft warm lighting, 8-year-old adventure hero on exciting quest, wholesome imagery, hand-painted quality, 4:3 aspect ratio`,
+          text_content: data.continuation,
+          illustration_prompt: `Children's storybook illustration: ${data.continuation.substring(0, 100)}..., watercolor style, soft lighting, ${data.biome} setting`,
           image_url: `https://picsum.photos/400/300?random=3`
         },
         {
           page_number: 4,
-          text_content: `After their incredible adventure, our heroes returned home with stories to tell and memories to cherish forever.`,
-          illustration_prompt: `Professional children's storybook illustration: Heroes returning home from ${data.biome}, watercolor and gouache style, soft warm lighting, 8-year-old adventure hero with satisfied smile, wholesome imagery, hand-painted quality, 4:3 aspect ratio`,
+          text_content: data.continuation + " The story reached its exciting conclusion...",
+          illustration_prompt: `Children's storybook illustration: Exciting conclusion in ${data.biome}, watercolor style, soft lighting`,
           image_url: `https://picsum.photos/400/300?random=4`
         },
         {
           page_number: 5,
-          text_content: `The ${data.biome} would always hold a special place in their hearts, and they knew they would return one day for more adventures.`,
-          illustration_prompt: `Professional children's storybook illustration: Nostalgic view of ${data.biome}, watercolor and gouache style, soft warm lighting, peaceful landscape with 8-year-old adventure hero reflecting, wholesome imagery, hand-painted quality, 4:3 aspect ratio`,
+          text_content: "And so the adventure came to an end, but the memories would last forever.",
+          illustration_prompt: `Children's storybook illustration: Peaceful ending scene in ${data.biome}, watercolor style, soft lighting`,
           image_url: `https://picsum.photos/400/300?random=5`
         },
         {
           page_number: 6,
-          text_content: `And so, the tale of their ${data.biome} adventure became a legend that would be told for generations to come.`,
-          illustration_prompt: `Professional children's storybook illustration: Legendary scene from ${data.biome}, watercolor and gouache style, soft warm lighting, 8-year-old adventure hero in triumphant pose, wholesome imagery, hand-painted quality, 4:3 aspect ratio`,
+          text_content: "The end.",
+          illustration_prompt: `Children's storybook illustration: Final scene in ${data.biome}, watercolor style, soft lighting`,
           image_url: `https://picsum.photos/400/300?random=6`
         }
       ],
@@ -104,110 +104,43 @@ export const geminiService = {
       // Use Gemini 2.0 Flash for storybook generation
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
       
-      // Create a comprehensive prompt for storybook generation with professional schema
-      const storybookPrompt = `Create a complete children's storybook (10 pages) based on the following:
+      // Create a simple prompt that uses the user's exact content with storybook styling
+      const storybookPrompt = `Transform the following user story into a professional children's storybook with 10 pages:
 
-STORY DETAILS:
-- Title: "${data.title}"
-- Setting: ${data.biome}
-- Beginning: "${data.beginning}"
-- Continuation: "${data.continuation}"
+USER STORY:
+Title: "${data.title}"
+Beginning: "${data.beginning}"
+Continuation: "${data.continuation}"
+Setting: ${data.biome}
 
-STORYBOOK SCHEMA CONFIGURATION:
-{
-  "version": "1.0.0",
-  "metadata": {
-    "title": "${data.title}",
-    "subtitle": "A Magical Adventure",
-    "language": "en",
-    "reading_level": "beginner",
-    "intended_age": { "min": 6, "max": 10 },
-    "author": "AI Storyteller",
-    "illustrator": "AI Artist",
-    "narrator": "Friendly Voice",
-    "tags": ["adventure", "friendship", "magic", "${data.biome}"],
-    "educational_objectives": ["reading comprehension", "imagination", "moral values"],
-    "content_warnings": [],
-    "license": "creative-commons",
-    "created_at": "${new Date().toISOString()}"
-  },
-  "global_style": {
-    "palette": ["#FFE4B5", "#FFB6C1", "#98FB98", "#87CEEB", "#DDA0DD"],
-    "render_mode": "storybook",
-    "illustration_style": {
-      "lighting": "soft_warm",
-      "texture": "watercolor_gouache",
-      "linework": "gentle_ink",
-      "saturation": 0.8,
-      "contrast": 0.6
-    },
-    "layout": "picture_book",
-    "image_defaults": {
-      "aspect_ratio": "4:3",
-      "resolution_px": { "width": 800, "height": 600 },
-      "safety": { "violence": "none", "adult": "none", "medical": "none" },
-      "negative_prompt": "photorealistic, 3d render, digital art, harsh lighting, dark shadows, scary, violent, adult content, text, logos, watermarks"
-    },
-    "tts_defaults": { "voice": "friendly_child", "rate": 0.9, "pitch": 1.1, "format": "mp3" }
-  },
-  "character_bible": [
-    {
-      "id": "main_character",
-      "name": "Adventure Hero",
-      "role": "protagonist",
-      "visual": {
-        "species": "human_child",
-        "age_appearance": "8_years_old",
-        "colors": { "primary": "#FFB6C1", "secondary": "#87CEEB" },
-        "outfit": "adventure_clothes",
-        "distinct_features": ["friendly_eyes", "curious_expression", "brave_stance"]
-      },
-      "personality": ["brave", "curious", "kind", "adventurous"]
-    }
-  ]
-}
+STORYBOOK STYLE REQUIREMENTS:
+- Create exactly 10 pages
+- Use the user's exact story content as the foundation
+- Apply professional children's book illustration style
+- Each page should have engaging text and detailed illustration prompts
+- Maintain the user's original narrative and characters
+- Style: Watercolor/gouache with soft warm lighting
+- Age-appropriate for children 6-10 years old
+- Wholesome, positive imagery
 
-ILLUSTRATION STYLE REQUIREMENTS:
-You are an expert children's storybook illustrator creating professional picture book art.
-
-Style and tone:
-- Soft, warm lighting with gentle shadows
-- Watercolor/gouache texture with smooth blending
-- Gentle ink linework for definition
-- Warm, harmonious color palette
-- Consistent character design across all pages
-- Balanced composition with clear focal points
-- Wholesome, age-appropriate imagery
-
-Technical specifications:
-- Aspect ratio: 4:3 landscape orientation
+ILLUSTRATION SPECIFICATIONS:
+- Aspect ratio: 4:3 landscape
 - Resolution: 800x600 pixels
 - Style: Hand-painted children's book illustration
 - Texture: Watercolor with gouache details
 - Lighting: Soft, warm, diffused lighting
-- Colors: Pastel and warm tones, high saturation (0.8)
-- Contrast: Moderate (0.6) for readability
+- Colors: Pastel and warm tones
+- Character consistency across all pages
+- Magical ${data.biome} environment
 
-Character consistency:
-- Main character: 8-year-old child with friendly features
-- Consistent clothing and appearance across all pages
-- Expressive but gentle facial features
-- Age-appropriate proportions
-
-Environment design:
-- Magical ${data.biome} setting with fantastical elements
-- Soft, inviting landscapes
-- Clear environmental storytelling
-- Balanced composition with breathing room
-
-Return the storybook as a JSON object with this exact structure:
+Return as JSON:
 {
-  "title": "Story Title",
+  "title": "User's exact title",
   "pages": [
     {
       "page_number": 1,
-      "text_content": "Page text here...",
-      "illustration_prompt": "Detailed storybook-style illustration description with character consistency, soft watercolor style, warm lighting, magical ${data.biome} environment, 4:3 aspect ratio, wholesome imagery"
+      "text_content": "User's story content formatted for children's book",
+      "illustration_prompt": "Detailed storybook-style illustration description"
     }
   ]
 }`;
@@ -285,7 +218,7 @@ Return the storybook as a JSON object with this exact structure:
           try {
             console.log(`Generating image for page ${page.page_number}...`);
             
-            const imagePrompt = `${page.illustration_prompt}. Professional children's storybook illustration, watercolor and gouache style, soft warm lighting, 4:3 aspect ratio, 800x600 resolution, wholesome imagery, hand-painted quality, consistent character design, magical ${biome} environment, age-appropriate for 6-10 years old.`;
+                  const imagePrompt = `${page.illustration_prompt}. Children's storybook illustration, watercolor style, soft lighting, 4:3 aspect ratio, wholesome imagery, ${biome} environment.`;
             
             const result = await imageModel.generateContent(imagePrompt);
             const response = await result.response;
