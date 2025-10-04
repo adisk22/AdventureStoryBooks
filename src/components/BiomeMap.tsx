@@ -1,58 +1,57 @@
 import { BiomeTile, Biome } from "./BiomeTile";
-import forestImage from "@/assets/forest-biome.jpg";
-import desertImage from "@/assets/desert-biome.jpg";
-import oceanImage from "@/assets/ocean-biome.jpg";
-import tundraImage from "@/assets/tundra-biome.jpg";
-import mountainsImage from "@/assets/mountains-biome.jpg";
 
 interface BiomeMapProps {
   onBiomeClick: (biome: Biome) => void;
+  biomes?: Biome[]; // Make biomes optional for backward compatibility
 }
 
-const biomes: Biome[] = [
-  {
-    id: "forest",
-    name: "Enchanted Forest",
-    unlocked: true,
-    gradient: "bg-gradient-forest",
-    image: forestImage,
-    storyCount: 12,
-  },
-  {
-    id: "desert",
-    name: "Golden Desert",
-    unlocked: true,
-    gradient: "bg-gradient-desert",
-    image: desertImage,
-    storyCount: 8,
-  },
-  {
-    id: "ocean",
-    name: "Deep Ocean",
-    unlocked: true,
-    gradient: "bg-gradient-ocean",
-    image: oceanImage,
-    storyCount: 15,
-  },
-  {
-    id: "tundra",
-    name: "Frozen Tundra",
-    unlocked: false,
-    gradient: "bg-gradient-tundra",
-    image: tundraImage,
-    storyCount: 0,
-  },
-  {
-    id: "mountains",
-    name: "Misty Mountains",
-    unlocked: false,
-    gradient: "bg-gradient-mountains",
-    image: mountainsImage,
-    storyCount: 0,
-  },
-];
+export const BiomeMap = ({ onBiomeClick, biomes }: BiomeMapProps) => {
+  // Fallback biomes if none provided (for backward compatibility)
+  const defaultBiomes: Biome[] = [
+    {
+      id: "forest",
+      name: "Enchanted Forest",
+      unlocked: true,
+      gradient: "bg-gradient-forest",
+      image: "/forest-biome.jpg",
+      storyCount: 12,
+    },
+    {
+      id: "desert",
+      name: "Golden Desert",
+      unlocked: true,
+      gradient: "bg-gradient-desert",
+      image: "/desert-biome.jpg",
+      storyCount: 8,
+    },
+    {
+      id: "ocean",
+      name: "Deep Ocean",
+      unlocked: true,
+      gradient: "bg-gradient-ocean",
+      image: "/ocean-biome.jpg",
+      storyCount: 15,
+    },
+    {
+      id: "tundra",
+      name: "Frozen Tundra",
+      unlocked: false,
+      gradient: "bg-gradient-tundra",
+      image: "/tundra-biome.jpg",
+      storyCount: 0,
+    },
+    {
+      id: "mountains",
+      name: "Misty Mountains",
+      unlocked: false,
+      gradient: "bg-gradient-mountains",
+      image: "/mountains-biome.jpg",
+      storyCount: 0,
+    },
+  ];
 
-export const BiomeMap = ({ onBiomeClick }: BiomeMapProps) => {
+  const displayBiomes = biomes || defaultBiomes;
+
   return (
     <div className="p-6">
       <div className="max-w-6xl mx-auto">
@@ -66,7 +65,7 @@ export const BiomeMap = ({ onBiomeClick }: BiomeMapProps) => {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-slide-up">
-          {biomes.map((biome, index) => (
+          {displayBiomes.map((biome, index) => (
             <div
               key={biome.id}
               style={{ animationDelay: `${index * 0.1}s` }}

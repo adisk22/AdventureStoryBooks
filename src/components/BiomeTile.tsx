@@ -16,6 +16,8 @@ interface BiomeTileProps {
 }
 
 export const BiomeTile = ({ biome, onClick }: BiomeTileProps) => {
+  console.log('🖼️ Rendering biome tile:', biome.name, 'Image:', biome.image);
+  
   return (
     <button
       onClick={onClick}
@@ -35,6 +37,8 @@ export const BiomeTile = ({ biome, onClick }: BiomeTileProps) => {
             "w-full h-full object-cover transition-transform duration-300",
             biome.unlocked ? "group-hover:scale-110" : "grayscale"
           )}
+          onLoad={() => console.log('✅ Image loaded:', biome.image)}
+          onError={(e) => console.error('❌ Image failed to load:', biome.image, e)}
         />
         
         {/* Gradient overlay */}
