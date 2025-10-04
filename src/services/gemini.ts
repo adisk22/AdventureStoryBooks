@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Ensure your .env.local has VITE_GEMINI_API_KEY
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const GEMINI_API_KEY = 'AIzaSyDGIyVMpCIhgzRPV8zkgh99uqeGGeTPf6I'
 
 if (!GEMINI_API_KEY) {
   console.warn('⚠️ VITE_GEMINI_API_KEY is not set. Using mock Gemini Storybook service.');
@@ -34,6 +34,7 @@ const mockGeminiResponses = {
     photos?: File[];
   }) => {
     console.log('MOCK: Generating Gemini Storybook...');
+    
     return Promise.resolve({
       title: data.title || `Adventure in ${data.biome}`,
       pages: [
@@ -41,13 +42,13 @@ const mockGeminiResponses = {
           page_number: 1,
           text_content: data.beginning,
           illustration_prompt: `Children's storybook illustration: ${data.beginning.substring(0, 100)}..., watercolor style, soft lighting, ${data.biome} setting`,
-          image_url: `https://picsum.photos/400/300?random=1`
+          image_url: `https://media.istockphoto.com/id/814423752/photo/eye-of-model-with-colorful-art-make-up-close-up.jpg?s=612x612&w=0&k=20&c=l15OdMWjgCKycMMShP8UK94ELVlEGvt7GmB_esHWPYE=`
         },
         {
           page_number: 2,
           text_content: data.beginning + " The adventure continued...",
           illustration_prompt: `Children's storybook illustration: Adventure scene in ${data.biome}, watercolor style, soft lighting`,
-          image_url: `https://picsum.photos/400/300?random=2`
+          image_url: `https://media.istockphoto.com/id/814423752/photo/eye-of-model-with-colorful-art-make-up-close-up.jpg?s=612x612&w=0&k=20&c=l15OdMWjgCKycMMShP8UK94ELVlEGvt7GmB_esHWPYE=`
         },
         {
           page_number: 3,
@@ -102,10 +103,12 @@ export const geminiService = {
       console.log('📚 Generating storybook with Gemini Storybook API...');
       
       // Use Gemini 2.0 Flash for storybook generation
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
       
       // Create a simple prompt that uses the user's exact content with storybook styling
-      const storybookPrompt = `Transform the following user story into a professional children's storybook with 10 pages:
+      const storybookPrompt = `Transform the following user story into a professional children's storybook with 5 pages 
+      and detailed illustration and animations for kids aged 6 to 10 years old. make sure the 
+      images are relavant to the story and engaging.:
 
 USER STORY:
 Title: "${data.title}"
@@ -149,6 +152,7 @@ Return as JSON:
       const result = await model.generateContent(storybookPrompt);
       const response = await result.response;
       const text = response.text();
+      responseMimeType: "image/png";
       
       console.log('📥 Received storybook response from Gemini:', text);
 
@@ -207,11 +211,12 @@ Return as JSON:
       }));
     }
 
+    
     try {
       console.log('🎨 Generating illustrations for storybook pages...');
       
       // Use Imagen for image generation
-      const imageModel = genAI.getGenerativeModel({ model: "imagen-3.0-generate-001" });
+      const imageModel = genAI.getGenerativeModel({ model: "veo-2.0-generate-001" });
       
       const pagesWithImages = await Promise.all(
         pages.map(async (page, index) => {
@@ -219,14 +224,12 @@ Return as JSON:
             console.log(`Generating image for page ${page.page_number}...`);
             
                   const imagePrompt = `${page.illustration_prompt}. Children's storybook illustration, watercolor style, soft lighting, 4:3 aspect ratio, wholesome imagery, ${biome} environment.`;
-            
-            const result = await imageModel.generateContent(imagePrompt);
-            const response = await result.response;
-            
+        
             // Extract image URL from response
-            const imageUrl = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data || 
-                           response.candidates?.[0]?.content?.parts?.[0]?.text;
-            
+            const imageUrl =  `https://pollinations.ai/api/v1/generate?prompt=${encodeURIComponent(imagePrompt)}&width=1024&height=1024`;
+            const res = await fetch(imageUrl);
+            if (!res.ok) throw new Error('Failed to fetch image');
+
             return {
               ...page,
               image_url: imageUrl || `https://picsum.photos/400/300?random=${page.page_number}`
@@ -299,5 +302,5 @@ Return as JSON:
       console.error('❌ Error analyzing photos:', error);
       return mockGeminiResponses.analyzePhotos(photos);
     }
-  }
+  },
 };

@@ -14,319 +14,375 @@ export type Database = {
   }
   public: {
     Tables: {
-      users: {
+      _supabase_migrations: {
         Row: {
-          id: string
-          email: string
-          display_name: string
-          avatar_url: string | null
-          role: 'student' | 'teacher' | 'admin'
-          class_id: string | null
-          total_points: number
-          level: number
-          created_at: string
-          updated_at: string
+          name: string | null
+          statements: string[] | null
+          version: string
         }
         Insert: {
-          id?: string
-          email: string
-          display_name: string
-          avatar_url?: string | null
-          role?: 'student' | 'teacher' | 'admin'
-          class_id?: string | null
-          total_points?: number
-          level?: number
-          created_at?: string
-          updated_at?: string
+          name?: string | null
+          statements?: string[] | null
+          version: string
         }
         Update: {
-          id?: string
-          email?: string
-          display_name?: string
-          avatar_url?: string | null
-          role?: 'student' | 'teacher' | 'admin'
-          class_id?: string | null
-          total_points?: number
-          level?: number
-          created_at?: string
-          updated_at?: string
+          name?: string | null
+          statements?: string[] | null
+          version?: string
         }
-      }
-      classes: {
-        Row: {
-          id: string
-          name: string
-          teacher_id: string | null
-          school_name: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          name: string
-          teacher_id?: string | null
-          school_name?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          name?: string
-          teacher_id?: string | null
-          school_name?: string | null
-          created_at?: string
-          updated_at?: string
-        }
+        Relationships: []
       }
       biomes: {
         Row: {
-          id: string
-          name: string
           description: string | null
-          image_url: string | null
-          gradient_class: string | null
-          unlock_points: number
-          is_active: boolean
-          created_at: string
-          updated_at: string
+          gradient: string | null
+          id: string
+          image: string | null
+          name: string
+          storyCount: number
+          unlocked: boolean | null
         }
         Insert: {
-          id?: string
-          name: string
           description?: string | null
-          image_url?: string | null
-          gradient_class?: string | null
-          unlock_points?: number
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
+          gradient?: string | null
+          id: string
+          image?: string | null
+          name: string
+          storyCount?: number
+          unlocked?: boolean | null
         }
         Update: {
+          description?: string | null
+          gradient?: string | null
+          id?: string
+          image?: string | null
+          name?: string
+          storyCount?: number
+          unlocked?: boolean | null
+        }
+        Relationships: []
+      }
+      classes: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          school_name: string | null
+          teacher_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          school_name?: string | null
+          teacher_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
           id?: string
           name?: string
-          description?: string | null
-          image_url?: string | null
-          gradient_class?: string | null
-          unlock_points?: number
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
+          school_name?: string | null
+          teacher_id?: string | null
+          updated_at?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "fk_classes_teacher"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       literary_goals: {
         Row: {
-          id: string
-          title: string
+          created_at: string | null
           description: string | null
-          type: 'adjective' | 'verb' | 'dialogue' | 'description' | 'plot_element' | 'character_development'
-          points: number
-          difficulty: 'beginner' | 'intermediate' | 'advanced'
-          is_active: boolean
-          created_at: string
-          updated_at: string
+          difficulty: Database["public"]["Enums"]["difficulty_level"] | null
+          id: string
+          is_active: boolean | null
+          points: number | null
+          title: string
+          type: Database["public"]["Enums"]["goal_type"]
+          updated_at: string | null
         }
         Insert: {
-          id?: string
-          title: string
+          created_at?: string | null
           description?: string | null
-          type: 'adjective' | 'verb' | 'dialogue' | 'description' | 'plot_element' | 'character_development'
-          points?: number
-          difficulty?: 'beginner' | 'intermediate' | 'advanced'
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
+          difficulty?: Database["public"]["Enums"]["difficulty_level"] | null
+          id?: string
+          is_active?: boolean | null
+          points?: number | null
+          title: string
+          type: Database["public"]["Enums"]["goal_type"]
+          updated_at?: string | null
         }
         Update: {
-          id?: string
-          title?: string
+          created_at?: string | null
           description?: string | null
-          type?: 'adjective' | 'verb' | 'dialogue' | 'description' | 'plot_element' | 'character_development'
-          points?: number
-          difficulty?: 'beginner' | 'intermediate' | 'advanced'
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
+          difficulty?: Database["public"]["Enums"]["difficulty_level"] | null
+          id?: string
+          is_active?: boolean | null
+          points?: number | null
+          title?: string
+          type?: Database["public"]["Enums"]["goal_type"]
+          updated_at?: string | null
         }
+        Relationships: []
       }
       stories: {
         Row: {
-          id: string
-          title: string
           author_id: string
           biome_id: string
-          status: 'draft' | 'in_progress' | 'completed' | 'published'
           content: Json | null
-          literary_goals: Json | null
+          created_at: string | null
           generated_images: Json | null
+          id: string
+          likes_count: number | null
+          literary_goals: Json | null
           original_images: Json | null
-          likes_count: number
-          views_count: number
-          word_count: number
-          created_at: string
-          updated_at: string
           published_at: string | null
+          status: Database["public"]["Enums"]["story_status"] | null
+          title: string
+          updated_at: string | null
+          views_count: number | null
+          word_count: number | null
         }
         Insert: {
-          id?: string
-          title: string
           author_id: string
           biome_id: string
-          status?: 'draft' | 'in_progress' | 'completed' | 'published'
           content?: Json | null
-          literary_goals?: Json | null
+          created_at?: string | null
           generated_images?: Json | null
+          id?: string
+          likes_count?: number | null
+          literary_goals?: Json | null
           original_images?: Json | null
-          likes_count?: number
-          views_count?: number
-          word_count?: number
-          created_at?: string
-          updated_at?: string
           published_at?: string | null
+          status?: Database["public"]["Enums"]["story_status"] | null
+          title: string
+          updated_at?: string | null
+          views_count?: number | null
+          word_count?: number | null
         }
         Update: {
-          id?: string
-          title?: string
           author_id?: string
           biome_id?: string
-          status?: 'draft' | 'in_progress' | 'completed' | 'published'
           content?: Json | null
-          literary_goals?: Json | null
+          created_at?: string | null
           generated_images?: Json | null
+          id?: string
+          likes_count?: number | null
+          literary_goals?: Json | null
           original_images?: Json | null
-          likes_count?: number
-          views_count?: number
-          word_count?: number
-          created_at?: string
-          updated_at?: string
           published_at?: string | null
+          status?: Database["public"]["Enums"]["story_status"] | null
+          title?: string
+          updated_at?: string | null
+          views_count?: number | null
+          word_count?: number | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "stories_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       story_pages: {
         Row: {
-          id: string
-          story_id: string
-          page_number: number
-          text_content: string
-          image_url: string | null
           character_images: Json | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          story_id: string
+          created_at: string | null
+          id: string
+          image_url: string | null
           page_number: number
+          story_id: string | null
           text_content: string
-          image_url?: string | null
+        }
+        Insert: {
           character_images?: Json | null
-          created_at?: string
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          page_number: number
+          story_id?: string | null
+          text_content: string
         }
         Update: {
+          character_images?: Json | null
+          created_at?: string | null
           id?: string
-          story_id?: string
+          image_url?: string | null
           page_number?: number
+          story_id?: string | null
           text_content?: string
-          image_url?: string | null
-          character_images?: Json | null
-          created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "story_pages_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      user_progress: {
+      users: {
         Row: {
+          avatar_url: string | null
+          class_id: string | null
+          created_at: string | null
+          display_name: string
+          email: string
           id: string
-          user_id: string
-          biome_id: string | null
-          points_earned: number
-          stories_completed: number
-          literary_goals_completed: Json
-          unlocked_biomes: Json
-          last_activity: string
-          created_at: string
-          updated_at: string
+          level: number | null
+          points_earned: number | null
+          role: string | null
+          stories_completed: number | null
+          total_points: number | null
+          unlocked_biomes: string | null
+          updated_at: string | null
         }
         Insert: {
+          avatar_url?: string | null
+          class_id?: string | null
+          created_at?: string | null
+          display_name: string
+          email: string
           id?: string
-          user_id: string
-          biome_id?: string | null
-          points_earned?: number
-          stories_completed?: number
-          literary_goals_completed?: Json
-          unlocked_biomes?: Json
-          last_activity?: string
-          created_at?: string
-          updated_at?: string
+          level?: number | null
+          points_earned?: number | null
+          role?: string | null
+          stories_completed?: number | null
+          total_points?: number | null
+          unlocked_biomes?: string | null
+          updated_at?: string | null
         }
         Update: {
+          avatar_url?: string | null
+          class_id?: string | null
+          created_at?: string | null
+          display_name?: string
+          email?: string
           id?: string
-          user_id?: string
-          biome_id?: string | null
-          points_earned?: number
-          stories_completed?: number
-          literary_goals_completed?: Json
-          unlocked_biomes?: Json
-          last_activity?: string
-          created_at?: string
-          updated_at?: string
+          level?: number | null
+          points_earned?: number | null
+          role?: string | null
+          stories_completed?: number | null
+          total_points?: number | null
+          unlocked_biomes?: string | null
+          updated_at?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "users_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      story_interactions: {
+      UsersToClass: {
         Row: {
-          id: string
-          story_id: string
-          user_id: string
-          interaction_type: 'like' | 'view' | 'comment'
+          classID: string | null
           created_at: string
+          id: number
+          userID: string | null
         }
         Insert: {
-          id?: string
-          story_id: string
-          user_id: string
-          interaction_type: 'like' | 'view' | 'comment'
+          classID?: string | null
           created_at?: string
+          id?: number
+          userID?: string | null
         }
         Update: {
-          id?: string
-          story_id?: string
-          user_id?: string
-          interaction_type?: 'like' | 'view' | 'comment'
+          classID?: string | null
           created_at?: string
+          id?: number
+          userID?: string | null
         }
+        Relationships: []
+      }
+      UserToStories: {
+        Row: {
+          created_at: string | null
+          id: string
+          interaction_type: Database["public"]["Enums"]["interaction_type"]
+          story_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          interaction_type: Database["public"]["Enums"]["interaction_type"]
+          story_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          interaction_type?: Database["public"]["Enums"]["interaction_type"]
+          story_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_interactions_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "story_interactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      award_literary_goal_points: {
+        Args: { goal_uuid: string; user_uuid: string }
+        Returns: number
+      }
+      can_unlock_biome: {
+        Args: { biome_uuid: string; user_uuid: string }
+        Returns: boolean
+      }
       get_user_unlocked_biomes: {
-        Args: {
-          user_uuid: string
-        }
+        Args: { user_uuid: string }
         Returns: {
           biome_id: string
           biome_name: string
           unlock_points: number
         }[]
       }
-      can_unlock_biome: {
-        Args: {
-          user_uuid: string
-          biome_uuid: string
-        }
-        Returns: boolean
-      }
-      award_literary_goal_points: {
-        Args: {
-          user_uuid: string
-          goal_uuid: string
-        }
-        Returns: number
-      }
     }
     Enums: {
-      user_role: 'student' | 'teacher' | 'admin'
-      story_status: 'draft' | 'in_progress' | 'completed' | 'published'
-      goal_type: 'adjective' | 'verb' | 'dialogue' | 'description' | 'plot_element' | 'character_development'
-      difficulty_level: 'beginner' | 'intermediate' | 'advanced'
-      interaction_type: 'like' | 'view' | 'comment'
+      difficulty_level: "beginner" | "intermediate" | "advanced"
+      goal_type:
+        | "adjective"
+        | "verb"
+        | "dialogue"
+        | "description"
+        | "plot_element"
+        | "character_development"
+      interaction_type: "like" | "view" | "comment"
+      story_status: "draft" | "in_progress" | "completed" | "published"
+      user_role: "student" | "teacher" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -453,6 +509,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      difficulty_level: ["beginner", "intermediate", "advanced"],
+      goal_type: [
+        "adjective",
+        "verb",
+        "dialogue",
+        "description",
+        "plot_element",
+        "character_development",
+      ],
+      interaction_type: ["like", "view", "comment"],
+      story_status: ["draft", "in_progress", "completed", "published"],
+      user_role: ["student", "teacher", "admin"],
+    },
   },
 } as const

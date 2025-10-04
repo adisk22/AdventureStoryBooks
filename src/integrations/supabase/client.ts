@@ -7,7 +7,7 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY |
 
 // Debug: Log the connection details
 console.log('🔗 Supabase Connection Details:');
-console.log('URL:', SUPABASE_URL);
+console.log('URL:', SUPABASE_URL);// ...existing code...
 console.log('Key (first 20 chars):', SUPABASE_PUBLISHABLE_KEY.substring(0, 20) + '...');
 console.log('Key format valid:', SUPABASE_PUBLISHABLE_KEY.startsWith('eyJ'));
 

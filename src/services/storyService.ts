@@ -390,4 +390,4 @@ class StoryService {
   }
 }
 
-export const storyService = new StoryService();
+export const storyServices = new StoryService();

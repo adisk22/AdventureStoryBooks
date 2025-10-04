@@ -20,7 +20,7 @@ import {
   Users
 } from 'lucide-react';
 import { useAuth } from '@/contexts/DemoAuthContext';
-import { storyService, type Story, type StoryDraft, type StoryStats } from '@/services/storyService';
+import { storyService, type Story, type StoryDraft, type StoryStats } from '@/services/newStoryService';
 
 export default function MyStories() {
   const navigate = useNavigate();
@@ -46,15 +46,13 @@ export default function MyStories() {
     setError(null);
     
     try {
-      const [storiesData, draftsData, statsData] = await Promise.all([
-        storyService.getUserStories(user.id),
-        storyService.getUserDrafts(user.id),
-        storyService.getUserStats(user.id)
-      ]);
+      // const [storiesData, draftsData, statsData] = await Promise.all([
+        
+      // ]);
       
-      setStories(storiesData);
-      setDrafts(draftsData);
-      setStats(statsData);
+      // setStories(storiesData);
+      // setDrafts(draftsData);
+      // setStats(statsData);
     } catch (err) {
       console.error('Error loading user data:', err);
       setError('Failed to load your stories. Please try again.');
@@ -75,7 +73,7 @@ export default function MyStories() {
     if (!user) return;
     
     try {
-      await storyService.deleteDraft(draftId, user.id);
+      
       setDrafts(prev => prev.filter(draft => draft.id !== draftId));
     } catch (err) {
       console.error('Error deleting draft:', err);
@@ -87,7 +85,6 @@ export default function MyStories() {
     if (!user) return;
     
     try {
-      await storyService.deleteStory(storyId, user.id);
       setStories(prev => prev.filter(story => story.id !== storyId));
     } catch (err) {
       console.error('Error deleting story:', err);
@@ -211,7 +208,7 @@ export default function MyStories() {
                         <div className="flex-1">
                           <CardTitle className="text-lg line-clamp-2">{story.title}</CardTitle>
                           <CardDescription className="mt-1">
-                            {story.biomes?.name || story.biome_id}
+                            {/* {story.biomes?.name || story.biome_id} */}
                           </CardDescription>
                         </div>
                         <Badge variant="secondary" className="ml-2">

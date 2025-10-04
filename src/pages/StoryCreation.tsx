@@ -20,7 +20,7 @@ import {
   Save
 } from 'lucide-react';
 import { geminiService } from '@/services/gemini';
-import { storyService } from '@/services/storyService';
+import { storyService } from '@/services/newStoryService';
 import { useAuth } from '@/contexts/DemoAuthContext';
 
 interface StoryData {
@@ -73,16 +73,16 @@ export default function StoryCreation() {
     try {
       if (draftId) {
         // Update existing draft
-        await storyService.updateDraft(draftId, storyData);
+        // await storyService.updateDraft(draftId, storyData);
         console.log('✅ Draft updated');
       } else {
         // Create new draft
-        const draft = await storyService.createDraft({
-          ...storyData,
-          author_id: user.id
-        });
-        setDraftId(draft.id);
-        console.log('✅ Draft created:', draft);
+        // const draft = await storyService.createDraft({
+        //   ...storyData,
+        //   author_id: user.id
+        // });
+        // setDraftId(draft.id);
+        // console.log('✅ Draft created:', draft);
       }
       setIsDraft(true);
     } catch (err) {
@@ -129,13 +129,13 @@ export default function StoryCreation() {
     try {
       if (draftId) {
         // Publish from existing draft
-        await storyService.publishStory(draftId, generatedStory);
+        // await storyService.publishStory(draftId, generatedStory);
       } else {
         // Create new story directly
-        await storyService.createDraft({
-          ...storyData,
-          author_id: user.id
-        });
+        // await storyService.createDraft({
+        //   ...storyData,
+        //   author_id: user.id
+        // });
         // Note: In a real implementation, you'd publish directly
         console.log('📚 Story published successfully!');
       }

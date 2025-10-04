@@ -5,6 +5,7 @@ import { BiomeDetailPanel } from "@/components/BiomeDetailPanel";
 import { StudentSidebar } from "@/components/StudentSidebar";
 import { Biome } from "@/components/BiomeTile";
 import { useAuth } from "@/contexts/DemoAuthContext";
+import { storyService } from '@/services/newStoryService';
 
 const Index = () => {
   const { user } = useAuth();
@@ -16,58 +17,28 @@ const Index = () => {
 
   // Load biomes - using hardcoded data for demo
   useEffect(() => {
-    console.log('🌍 Loading demo biomes...');
-    
-    const demoBiomes = [
-      {
-        id: "forest",
-        name: "Enchanted Forest",
-        unlocked: true,
-        gradient: "bg-gradient-forest",
-        image: "/forest-biome.jpg",
-        storyCount: 12,
-      },
-      {
-        id: "desert",
-        name: "Golden Desert", 
-        unlocked: true,
-        gradient: "bg-gradient-desert",
-        image: "/desert-biome.jpg",
-        storyCount: 8,
-      },
-      {
-        id: "ocean",
-        name: "Deep Ocean",
-        unlocked: true,
-        gradient: "bg-gradient-ocean", 
-        image: "/ocean-biome.jpg",
-        storyCount: 15,
-      },
-      {
-        id: "tundra",
-        name: "Frozen Tundra",
-        unlocked: false,
-        gradient: "bg-gradient-tundra",
-        image: "/tundra-biome.jpg", 
-        storyCount: 0,
-      },
-      {
-        id: "mountains",
-        name: "Misty Mountains",
-        unlocked: false,
-        gradient: "bg-gradient-mountains",
-        image: "/mountains-biome.jpg",
-        storyCount: 0,
-      },
-    ];
-    
-    console.log('✅ Demo biomes loaded:', demoBiomes);
-    setBiomes(demoBiomes);
-    setIsLoading(false);
+    var demoBiomes = [];
+
+    const loadBiomes = async () => {
+      console.log('🌍 Loading demo biomes...');
+      
+      try {
+        demoBiomes = await storyService.getBiomes();
+      } catch (err) {
+        console.error('❌ Error fetching biomes from service:', err);
+      }
+      
+      console.log('✅ Demo biomes loaded:', demoBiomes);
+      setBiomes(demoBiomes);
+      setIsLoading(false);
+    };
+
+    loadBiomes();
   }, []);
 
   const handleBiomeClick = (biome: Biome) => {
     console.log('🖱️ Biome clicked:', biome);
+    
     if (biome.unlocked) {
       console.log('✅ Biome is unlocked, opening panel');
       setSelectedBiome(biome);
