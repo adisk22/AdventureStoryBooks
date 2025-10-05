@@ -44,6 +44,15 @@ export default function StoryCreate() {
 
     const postStory = async () => {
     
+      setIsLoading(true);
+
+      const containsProfanity = await geminiService.checkProfanity(storyData.title + ", " + storyData.beginning);
+      if (containsProfanity.profanity) {
+        setIsPanelOpen(true);
+        setIsLoading(false);
+        return;
+      }
+
       // Saving story in new schema
 			var newStory = {
 				title: storyData.title,
@@ -65,15 +74,6 @@ export default function StoryCreate() {
 
 		const postPage = async (storyID: number) => {
 			try {
-				setIsLoading(true);
-
-        const containsProfanity = await geminiService.checkProfanity(storyData.title + ", " + storyData.beginning);
-        if (containsProfanity.profanity) {
-          setIsPanelOpen(true);
-          setIsLoading(false);
-          return;
-        }
-
         const generatedPage = await geminiService.generatePartOfStory({
           title: storyData.title,
           beginning: storyData.beginning,

@@ -117,7 +117,7 @@ export const geminiService = {
 
   Return as JSON:
   {
-    "containsProfanity": true
+    "profanity": true
   }`;
     
       const result = await model.generateContent(profanityPrompt);
@@ -257,6 +257,8 @@ Return as JSON:
           Composition: 4:3 aspect ratio, clear focal point on main characters and story action, age-appropriate for children 6-10. 
           Mood: wholesome, wonder-filled, and inviting, capturing the story’s emotion, action, and key events. 
           Ensure the illustration directly represents the story content
+          Also ensure that generated image contains no profanity, such as sexual content or references, violent or graphic descriptions, strong language or profanity, drug or alcohol references, or scary or disturbing themes. In other words, ensure the story is age-appropriate for children 6-10 years old
+          In other words, have the generated image contain only wholesome, positive imagery only
           `;
 
       // Pollinations API URL
