@@ -77,7 +77,7 @@ class newStoryService {
                 storyID: storyID,
                 pageNum: PageData.page_number,
                 text: PageData.text_content,
-                imageUrl: "", 
+                imageUrl: PageData.image_url, 
                 nextPrompt: "",
                 biome: biome ?? "",
             };

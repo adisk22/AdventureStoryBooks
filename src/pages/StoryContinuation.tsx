@@ -37,6 +37,7 @@ export default function StoryContinuation() {
   const pageNumNum = pageNum ? Number(pageNum) : null;
   var biomeId = '';
   const [generatedStory, setGeneratedStory] = useState<storyPagesToStory[]>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -61,8 +62,6 @@ export default function StoryContinuation() {
     fetchBiome();
     fetchPastStories();
   }, [storyIdNum, pageNumNum]);
-
-  
   
   const [storyData, setStoryData] = useState<StoryData>({
     title: '',
@@ -75,6 +74,7 @@ export default function StoryContinuation() {
 
 		const postPage = async () => {
 			try {
+        setIsLoading(true);
         // Compiling all the story so far into one string
         const fullStoryText = (generatedStory ?? []).reduce((acc, page) => acc + " " + (page.text ?? ""), "");
         
@@ -87,10 +87,19 @@ export default function StoryContinuation() {
           biome: biomeId
         });
 
+        const generatedImage = await geminiService.generatePageImage({
+          title: storyTitle,
+          beginning: fullStoryText,
+          continuation: storyData.continuation,
+          biome: biomeId
+        });
+
         generatedPage.page_number = pageNumNum + 1;
+        generatedPage.image_url = generatedImage;
 
 				await storyService.saveStoryPage(generatedPage, storyIdNum);
 
+        setIsLoading(false);
         navigate(`/story-continuation/${storyIdNum}/${pageNumNum + 1}`);
 			} catch (err) {
 				console.error("Error generating or saving story page:", err);
@@ -106,8 +115,19 @@ export default function StoryContinuation() {
   };
 
   const finishStory = () => {
-    navigate(`/story-finish/${storyId}/${pageNumNum}`);
+    navigate(`/story-finish/${storyId}`);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Generating...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -131,36 +151,43 @@ export default function StoryContinuation() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5" />;
+              <Sparkles className="w-5 h-5" />
             </div>
           </div>
           <Progress value={(2 / 3) * 100} className="mt-4" />
         </div>
       </div>
 
-      {/* Story Preview */}
-      <div className="space-y-4" style={{ maxWidth: "80vw", alignContent: "center", justifyContent: "center", margin: "2rem 2rem", paddingTop: "2rem", paddingBottom: "2rem" }}>
-        <h4 className="font-semibold">Story Preview:</h4>
-        <div className="space-y-4">
-          {(generatedStory ?? []).map((page) => (
-            <div className="border rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm font-medium text-primary">Page {page.pageNum}</span>
+      <div style = {{ marginTop: "2rem", marginBottom: "2rem" }} >
+        <Card className="max-w-4xl mx-auto">
+          <CardContent className="space-y-6">
+            {/* Story Preview */}
+            <div className="space-y-4" style={{ maxWidth: "80vw", alignContent: "center", justifyContent: "center", margin: "2rem 2rem", paddingTop: "2rem", paddingBottom: "2rem" }}>
+              <h4 className="font-semibold">Story Preview:</h4>
+              <div className="space-y-4">
+                {(generatedStory ?? []).map((page) => (
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-sm font-medium text-primary">Page {page.pageNum}</span>
+                    </div>
+                    <p className="text-sm mb-2">{page.text}</p>
+                    {page.imageUrl && (
+                      <div className="mt-2">
+                        <img 
+                          src={page.imageUrl} 
+                          alt={`Page ${page.pageNum} illustration`}
+                          className="w-full max-w-md mx-auto rounded border"
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
-              <p className="text-sm mb-2">{page.text}</p>
-              {page.imageUrl && (
-                <div className="mt-2">
-                  <img 
-                    src={page.imageUrl} 
-                    alt={`Page ${page.pageNum} illustration`}
-                    className="w-full max-w-md mx-auto rounded border"
-                  />
-                </div>
-              )}
             </div>
-          ))}
-        </div>
+          </CardContent>
+        </Card>
       </div>
+      
 
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
@@ -191,19 +218,18 @@ export default function StoryContinuation() {
       </Card>
 
         {/* Navigation */}
-        <div className="flex justify-between mt-8">
-          
-            <Button 
-              onClick={handleNext}
-            >
+        <div style={{ margin: "2rem 2rem" }}>
+          <div className="flex justify-end space-x-2 mt-8">
+            <Button onClick={handleNext}>
               Next
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
-          
-          <Button onClick={finishStory} className="bg-gradient-primary">
-              <Check className="w-4 h-4 mr-2" />
-              Finish Story
-          </Button>
+            
+            <Button onClick={finishStory} className="bg-gradient-primary">
+                <Check className="w-4 h-4 mr-2" />
+                Finish Story
+            </Button>
+          </div>
         </div>
       </div>
   );

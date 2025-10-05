@@ -1,7 +1,8 @@
 export interface UnprocessedStory 
 {
   page_number: number,
-  text_content: string
+  text_content: string,
+  image_url: string,
 }
 
 export interface storyPagesToStory {
@@ -14,6 +15,6 @@ export interface storyPagesToStory {
     text: string | null
 }
 
-export interface ContainsProfanity {
+export interface containsProfanity {
     profanity: boolean;
 }

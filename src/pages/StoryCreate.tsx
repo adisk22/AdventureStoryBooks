@@ -35,6 +35,8 @@ export default function StoryCreate() {
     biome: biomeId || ''
   });
 
+	const [isLoading, setIsLoading] = useState(false);
+
   const handleNext = async () => {
 		var storyID;
 
@@ -61,6 +63,8 @@ export default function StoryCreate() {
 
 		const postPage = async (storyID: number) => {
 			try {
+				setIsLoading(true);
+
         const generatedPage = await geminiService.generatePartOfStory({
           title: storyData.title,
           beginning: storyData.beginning,
@@ -68,10 +72,19 @@ export default function StoryCreate() {
           biome: storyData.biome
         });
 
+				const generatedImage = await geminiService.generatePageImage({
+          title: storyData.title,
+          beginning: storyData.beginning,
+          continuation: "",
+          biome: storyData.biome
+        });
+
 				generatedPage.page_number = 1;
+				generatedPage.image_url = generatedImage;
 
 				await storyService.saveStoryPage(generatedPage, storyID);
 
+				setIsLoading(false);
 				navigate(`/story-continuation/${storyID}/1`);
 			} catch (err) {
 				console.error("Error generating or saving story page:", err);
@@ -86,6 +99,17 @@ export default function StoryCreate() {
   const handleInputChange = (field: keyof StoryData, value: string) => {
     setStoryData(prev => ({ ...prev, [field]: value }));
   };
+
+	if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Generating...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -109,7 +133,7 @@ export default function StoryCreate() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-							<PenTool className="w-5 h-5" />;
+							<PenTool className="w-5 h-5" />
             </div>
           </div>
           <Progress value={(1 / 3) * 100} className="mt-4" />
@@ -157,12 +181,14 @@ export default function StoryCreate() {
         </Card>
 
         {/* Navigation */}
-        <div className="flex justify-between mt-8">          
+				<div style={{ margin: "2rem 2rem" }}>
+					<div className="flex justify-end mt-8">          
             <Button onClick={handleNext}>
               Next
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
-        </div>
+        	</div>
+				</div>
       </div>
     </div>
   );

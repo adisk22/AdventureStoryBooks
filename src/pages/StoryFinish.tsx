@@ -19,21 +19,11 @@ import {
   AlertCircle,
   Save
 } from 'lucide-react';
-import { geminiService } from '@/services/gemini';
 import { storyService } from '@/services/newStoryService';
-import { useAuth } from '@/contexts/DemoAuthContext';
-
-interface StoryData {
-  title: string;
-  beginning: string;
-  continuation: string;
-  biome: string;
-}
 
 export default function StoryCreation() {
-  const { storyID, pageNum } = useParams<{ storyID, pageNum }>();
-  const storyIdNum = storyID ? Number(storyID) : null;
-  const pageNumNum = pageNum ? Number(pageNum) : null;
+  const { storyId } = useParams<{ storyId }>();
+  const storyIdNum = storyId ? Number(storyId) : null;
   var biomeId = '';
   const [generatedStory, setGeneratedStory] = useState<any>(null);
   const navigate = useNavigate();
@@ -42,20 +32,24 @@ export default function StoryCreation() {
 		setGeneratedStory([]);
 
 		const fetchBiome = async () => {
-			if (storyIdNum && pageNumNum) {
+			if (storyIdNum) {
 				// Load existing story data
 				biomeId = await storyService.getStoryBiome(storyIdNum);
 			}
 		};
 
 		const fetchPastStories = async () => {
+			console.log("Fetching past stories for story ID:", storyIdNum);
+
 			var returnedStory = await storyService.getStoryPages(storyIdNum);
-			setGeneratedStory(returnedStory);
+			setGeneratedStory(returnedStory ?? []);
+
+			console.log("generatedStory" + returnedStory);
 		}
 		
 		fetchBiome();
 		fetchPastStories();
-	}, [storyIdNum, pageNumNum]);
+	}, [storyIdNum]);
 
 
   return (
@@ -109,23 +103,23 @@ export default function StoryCreation() {
               <div className="space-y-4">
                 <h4 className="font-semibold">Story Preview:</h4>
                 <div className="space-y-4">
-                  {generatedStory.map((page: any, index: number) => (
-                    <div key={index} className="border rounded-lg p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-medium text-primary">Page {page.pageNum}</span>
-                        </div>
-                        <p className="text-sm mb-2">{page.text}</p>
-                        {page.imageUrl && (
-                        <div className="mt-2">
-                            <img 
-                            src={page.imageUrl} 
-                            alt={`Page ${page.pageNum} illustration`}
-                            className="w-full max-w-md mx-auto rounded border"
-                            />
-                        </div>
-                        )}
-                    </div>
-                    ))}
+                  {(generatedStory ?? []).map((page) => (
+										<div className="border rounded-lg p-4">
+											<div className="flex items-center gap-2 mb-2">
+												<span className="text-sm font-medium text-primary">Page {page.pageNum}</span>
+											</div>
+											<p className="text-sm mb-2">{page.text}</p>
+											{page.imageUrl && (
+												<div className="mt-2">
+													<img 
+														src={page.imageUrl} 
+														alt={`Page ${page.pageNum} illustration`}
+														className="w-full max-w-md mx-auto rounded border"
+													/>
+												</div>
+											)}
+										</div>
+									))}
                 </div>
               </div>
             </CardContent>

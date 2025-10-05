@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { UnprocessedStory, containsProfanity } from '@/models/models';
+import { UnprocessedStory, containsProfanity, storyPagesToStory } from '@/models/models';
 
 
 // Ensure your .env.local has VITE_GEMINI_API_KEY
@@ -90,38 +90,38 @@ const mockGeminiResponses = {
 
 export const geminiService = {
 
-async checkProfanity(text: string): Promise<containsProfanity> {
-    if (!GEMINI_API_KEY || !genAI) {
-      console.log('Using mock Gemini Storybook service (no API key provided)');
-      return { profanity: true};
+  async checkProfanity(text: string): Promise<containsProfanity> {
+      if (!GEMINI_API_KEY || !genAI) {
+        console.log('Using mock Gemini Storybook service (no API key provided)');
+        return { profanity: true};
+      }
+
+      try {
+        console.log('📚 Generating storybook with Gemini Storybook API...');
+        
+        // Use Gemini 2.0 Flash for storybook generation
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        
+        // Create a simple prompt that chekks for profanity
+        const storybookPrompt = `Check the following user story for profanity and content deemed inappropriate for children ages 3 to 10. If any is found, return true, otherwise return false.  
+        The user's story should not contain any
+        - Sexual content or references
+        - Violent or graphic descriptions
+        - Strong language or profanity
+        - Drug or alcohol references
+        - Scary or disturbing themes
+        - Any other content not suitable for young children
+
+        Here is the user's story to check for profanity: ${text}
+
+  Return as JSON:
+  {
+    "containsProfanity": true
+  }`;
     }
+      catch (error) {    }
 
-    try {
-      console.log('📚 Generating storybook with Gemini Storybook API...');
-      
-      // Use Gemini 2.0 Flash for storybook generation
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-      
-      // Create a simple prompt that chekks for profanity
-      const storybookPrompt = `Check the following user story for profanity and content deemed inappropriate for children ages 3 to 10. If any is found, return true, otherwise return false.  
-      The user's story should not contain any
-      - Sexual content or references
-      - Violent or graphic descriptions
-      - Strong language or profanity
-      - Drug or alcohol references
-      - Scary or disturbing themes
-      - Any other content not suitable for young children
-
-      Here is the user's story to check for profanity: ${text}
-
-Return as JSON:
-{
-  "containsProfanity": true
-}`;
-    }
-    catch (error) {    }
-
-  }, 
+    }, 
 
   async generateStorybook(data: {
     title: string;
@@ -293,54 +293,6 @@ Return as JSON:
     }
   },
 
-  async analyzePhotos(photos: File[]): Promise<string[]> {
-    if (!GEMINI_API_KEY || !genAI) {
-      return mockGeminiResponses.analyzePhotos(photos);
-    }
-    
-    try {
-      console.log('🔍 Analyzing photos for character extraction...');
-      
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
-      
-      // Convert files to base64 for API
-      const imageParts = await Promise.all(
-        photos.map(async (photo) => {
-          const arrayBuffer = await photo.arrayBuffer();
-          const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-          return {
-            inlineData: {
-              data: base64,
-              mimeType: photo.type
-            }
-          };
-        })
-      );
-
-      const prompt = `Analyze these photos and extract character information for a children's story. 
-      For each photo, provide a simple character name and brief description suitable for a children's story.
-      Return as a JSON array of character objects with "name" and "description" fields.`;
-
-      const result = await model.generateContent([prompt, ...imageParts]);
-      const response = await result.response;
-      const text = response.text();
-
-      // Parse character data
-      try {
-        const characters = JSON.parse(text);
-        return characters.map((char: any) => char.name || char.description || 'Character');
-      } catch (parseError) {
-        console.error('Error parsing character data:', parseError);
-        return photos.map((_, i) => `Character ${i + 1}`);
-      }
-
-    } catch (error) {
-      console.error('❌ Error analyzing photos:', error);
-      return mockGeminiResponses.analyzePhotos(photos);
-    }
-  },
-
-
   async generatePartOfStory(data: {
     title: string;
     beginning: string;
@@ -351,7 +303,8 @@ Return as JSON:
       console.log('Using mock Gemini Storybook service (no API key provided)');
       return {
         "page_number": 1,
-        "text_content": "User's story content formatted for children's book"
+        "text_content": "User's story content formatted for children's book",
+        "image_url": "https://picsum.photos/400/300?random=7"
       };
     }
 
@@ -374,14 +327,17 @@ STORYBOOK STYLE REQUIREMENTS:
 - Create around 2 to 3 sentences using the user story
 - Use the user's exact story content as the foundation
 - Each page should have engaging text
-- Maintain the user's original narrative and characters as shown in ${data.beginning}
-- Ensure that each plot point connects logically to the next
+- Maintain the user's original narrative and characters as shown in ${data.beginning} and ${data.title}
+- Ensure that each plot point connects logically to the next. For example, a character doesn't need to travel to the location they are already at. Another example is, a character should interact with new characters introduced in the prompt
 - Age-appropriate for children 6-10 years old
 - Wholesome, positive imagery only
 - Ensure the story matches the ${data.biome} environment setting
 
+IMPORTANT: Place MUCH greater emphasis on what she is doing now ${data.continuation} rather than what has already happened ${data.beginning}. The new text should be a continuation of the story, not a repetition of what has already occurred. The next action should be about 
+what happens next in the story based on what is most likely to happen next considering where the character is now.
+
 RETURN REQUIREMENTS:
-- Keep text_content as only the new generated piece. It should not contain text from ${data.beginning} and ${data.continuation}
+- Keep text_content as only the new generated piece. It should not contain text or ideas from ${data.beginning} and ${data.continuation}
 - ${data.beginning} and ${data.continuation} should be used to help generate the new text, but not be part of it
 
 Return as JSON:
@@ -416,8 +372,44 @@ Return as JSON:
     } catch (error) {
       return {
         "page_number": 1,
-        "text_content": "User's story content formatted for children's book"
+        "text_content": "User's story content formatted for children's book",
+        "image_url": "https://picsum.photos/400/300?random=7"
       };
     }
-  }
+  },
+
+  async generatePageImage(data: {
+    title: string;
+    beginning: string;
+    continuation: string;
+    biome: string;
+  }): Promise<string> {
+    
+    try {
+      console.log('🎨 Generating illustration for storybook page...');
+
+      var currentPart = data.continuation == "" ? data.beginning : data.continuation;
+
+      const imagePrompt = `. 
+          Scene: Depict a scene that reflects this part of the story: "${currentPart} using plot points from ${data.title}". 
+          Focus on depicting the story accurately:
+            - Characters: include all main characters mentioned in this scene
+            - Actions: show what each character is doing
+            - Objects & background: include important objects, setting, or elements from the story
+            - The possible environment they are in based on the story so far: ${data.biome}. If the text has said they met with someone or have entered a building or structure, then ${data.biome} can be less prominent.
+          Art style: soft watercolor with delicate hand-drawn linework, gentle pastel colors
+          Composition: 4:3 aspect ratio, clear focal point on main characters and story action, age-appropriate for children 6-10. 
+          Mood: wholesome, wonder-filled, and inviting, capturing the story’s emotion, action, and key events. 
+          Ensure the illustration directly represents the story content
+          `;
+
+      // Pollinations API URL
+      const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=1024&height=768&model=turbo`;
+
+      return imageUrl;
+
+    } catch (error) {
+      return `https://picsum.photos/400/300?random=3`
+    }
+  },
 };
