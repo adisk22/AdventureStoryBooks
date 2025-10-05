@@ -1,6 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
-import type { GeneratedStory } from '@/services/gemini';
 import type { UnprocessedStory } from '@/models/models';
 
 // TYPES
@@ -147,6 +146,20 @@ class newStoryService {
             return data.title ?? null;
         } catch (err) {
             console.error("Unexpected error in getStoryTitle:", err);
+            return null;
+        }
+    }
+
+    async getAllStories(): Promise<savedStories[]> {
+        try {
+            const { data, error } = await supabase
+                .from("savedStories")   // your table
+                .select("*")            // fetch all columns
+                .order("created_at", { ascending: false }); // order by creation date descending
+
+            return data ?? null;
+        } catch (err) {
+            console.error("Unexpected error in getting all stories:", err);
             return null;
         }
     }

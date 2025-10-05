@@ -7,12 +7,10 @@ import { DemoAuthProvider } from "@/contexts/DemoAuthContext";
 import Index from "./pages/Index";
 
 // Creating a story
-import StoryCreation from "./pages/StoryCreation";
 import StoryContinuation from "./pages/StoryContinuation";
 import StoryCreate from "./pages/StoryCreate"
 import StoryFinish from "./pages/StoryFinish";
 
-import MyStories from "./pages/MyStories";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,8 +24,6 @@ const App = () => (
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/story-creation/:biomeId" element={<StoryCreation />} />
-            <Route path="/my-stories" element={<MyStories />} />
             <Route path="/story-continuation/:storyId/:pageNum" element={<StoryContinuation/>} />
             <Route path="/story-finish/:storyId" element={<StoryFinish />} />
             <Route path="/story-create/:biomeId" element={<StoryCreate />} />
