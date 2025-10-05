@@ -92,7 +92,6 @@ export const geminiService = {
 
   async checkProfanity(text: string): Promise<containsProfanity> {
       if (!GEMINI_API_KEY || !genAI) {
-        console.log('Using mock Gemini Storybook service (no API key provided)');
         return { profanity: true};
       }
 
@@ -103,7 +102,7 @@ export const geminiService = {
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         
         // Create a simple prompt that chekks for profanity
-        const storybookPrompt = `Check the following user story for profanity and content deemed inappropriate for children ages 3 to 10. If any is found, return true, otherwise return false.  
+        const profanityPrompt = `Check the following user story for profanity and content deemed inappropriate for children ages 3 to 10. If any is found, return true, otherwise return false.  
         The user's story should not contain any
         - Sexual content or references
         - Violent or graphic descriptions
@@ -112,186 +111,43 @@ export const geminiService = {
         - Scary or disturbing themes
         - Any other content not suitable for young children
 
+        Check for profanity in both text content, wordings, themes, and any implied meanings.
+
         Here is the user's story to check for profanity: ${text}
 
   Return as JSON:
   {
     "containsProfanity": true
   }`;
-    }
-      catch (error) {    }
-
-    }, 
-
-  async generateStorybook(data: {
-    title: string;
-    beginning: string;
-    continuation: string;
-    biome: string;
-    photos?: File[];
-  }): Promise<GeneratedStory> {
-    if (!GEMINI_API_KEY || !genAI) {
-      console.log('Using mock Gemini Storybook service (no API key provided)');
-      return mockGeminiResponses.generateStorybook(data);
-    }
-
-    try {
-      console.log('📚 Generating storybook with Gemini Storybook API...');
-      
-      // Use Gemini 2.0 Flash for storybook generation
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-      
-      // Create a simple prompt that uses the user's exact content with storybook styling
-      const storybookPrompt = `Transform the following user story into a professional children's storybook with 5 pages 
-      and detailed illustration and animations for kids aged 6 to 10 years old. make sure the 
-      images are relavant to the story and engaging.:
-
-USER STORY:
-Title: "${data.title}"
-Beginning: "${data.beginning}"
-Continuation: "${data.continuation}"
-Setting: ${data.biome}
-
-STORYBOOK STYLE REQUIREMENTS:
-- Create exactly 10 pages
-- Use the user's exact story content as the foundation
-- Apply professional children's book illustration style
-- Each page should have engaging text and detailed illustration prompts
-- Maintain the user's original narrative and characters
-- Style: Watercolor/gouache with soft warm lighting
-- Age-appropriate for children 6-10 years old
-- Wholesome, positive imagery
-
-ILLUSTRATION SPECIFICATIONS:
-- Aspect ratio: 4:3 landscape
-- Resolution: 800x600 pixels
-- Style: Hand-painted children's book illustration
-- Texture: Watercolor with gouache details
-- Lighting: Soft, warm, diffused lighting
-- Colors: Pastel and warm tones
-- Character consistency across all pages
-- Magical ${data.biome} environment
-
-Return as JSON:
-{
-  "title": "User's exact title",
-  "pages": [
-    {
-      "page_number": 1,
-      "text_content": "User's story content formatted for children's book",
-      "illustration_prompt": "Detailed storybook-style illustration description"
-    }
-  ]
-}`;
-
-      console.log('📤 Sending storybook prompt to Gemini...');
-      const result = await model.generateContent(storybookPrompt);
+    
+      const result = await model.generateContent(profanityPrompt);
       const response = await result.response;
-      const text = response.text();
-      responseMimeType: "image/png";
+      
+      var text = response.text();
+      text = text.replace(/```(json)?/g, "").trim();
       
       console.log('📥 Received storybook response from Gemini:', text);
 
       // Parse the JSON response
-      let storybookJson;
+      let profanityJson: containsProfanity;
       try {
-        // Try to parse directly first
-        storybookJson = JSON.parse(text);
-      } catch (parseError) {
-        console.log('Direct JSON parse failed, trying to extract from markdown...');
-        // Try to extract JSON from markdown code blocks
-        const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) || text.match(/```\n([\s\S]*?)\n```/);
-        if (jsonMatch && jsonMatch[1]) {
-          storybookJson = JSON.parse(jsonMatch[1]);
-        } else {
-          // If all else fails, try to find JSON-like content
-          const jsonStart = text.indexOf('{');
-          const jsonEnd = text.lastIndexOf('}') + 1;
-          if (jsonStart !== -1 && jsonEnd > jsonStart) {
-            const jsonString = text.substring(jsonStart, jsonEnd);
-            storybookJson = JSON.parse(jsonString);
-          } else {
-            throw new Error('Could not extract JSON from Gemini response');
-          }
-        }
-      }
-
-      console.log('✅ Successfully parsed storybook from Gemini:', storybookJson);
-
-      // Generate illustrations for each page using Imagen
-      const storybookWithImages = await this.generateStorybookImages(storybookJson.pages, data.biome);
-
-      // Add narration and PDF URLs (these would be generated by the actual Storybook API)
-      const completeStorybook = {
-        ...storybookJson,
-        pages: storybookWithImages,
-        narration_url: 'https://example.com/narration.mp3', // Would be real URL from Storybook API
-        pdf_url: 'https://example.com/storybook.pdf' // Would be real URL from Storybook API
-      };
-
-      return completeStorybook;
-
-    } catch (error) {
-      console.error('❌ Gemini Storybook API Error:', error);
-      console.log('🔄 Falling back to mock response...');
-      return mockGeminiResponses.generateStorybook(data);
-    }
-  },
-
-  async generateStorybookImages(pages: StoryPage[], biome: string = 'magical world'): Promise<StoryPage[]> {
-    if (!GEMINI_API_KEY || !genAI) {
-      console.log('Using mock image generation');
-      return pages.map(page => ({
-        ...page,
-        image_url: `https://picsum.photos/400/300?random=${page.page_number}`
-      }));
-    }
-
-    
-    try {
-      console.log('🎨 Generating illustrations for storybook pages...');
-      
-      // Use Imagen for image generation
-      const imageModel = genAI.getGenerativeModel({ model: "veo-2.0-generate-001" });
-      
-      const pagesWithImages = await Promise.all(
-        pages.map(async (page, index) => {
-          try {
-            console.log(`Generating image for page ${page.page_number}...`);
-            
-                  const imagePrompt = `${page.illustration_prompt}. Children's storybook illustration, watercolor style, soft lighting, 4:3 aspect ratio, wholesome imagery, ${biome} environment.`;
+        profanityJson = JSON.parse(text) as containsProfanity;
         
-            // Extract image URL from response
-            const imageUrl =  `https://pollinations.ai/api/v1/generate?prompt=${encodeURIComponent(imagePrompt)}&width=1024&height=1024`;
-            const res = await fetch(imageUrl);
-            if (!res.ok) throw new Error('Failed to fetch image');
+      } catch (err) {
+        console.error("❌ Failed to parse Gemini response:", err);
+        throw err;
+      }
+      // Generate illustrations fo this page using Imagen
+      // const storybookWithImages = await this.generateStorybookImages(storybookJson.pages, data.biome);
 
-            return {
-              ...page,
-              image_url: imageUrl || `https://picsum.photos/400/300?random=${page.page_number}`
-            };
-          } catch (imageError) {
-            console.error(`Error generating image for page ${page.page_number}:`, imageError);
-            return {
-              ...page,
-              image_url: `https://picsum.photos/400/300?random=${page.page_number}`
-            };
-          }
-        })
-      );
+      return profanityJson;
+     } 
+     catch (error) 
+     {    
+      return { profanity: true};
+     }
 
-      console.log('✅ All storybook illustrations generated successfully');
-      return pagesWithImages;
-
-    } catch (error) {
-      console.error('❌ Error generating storybook images:', error);
-      // Return pages with placeholder images
-      return pages.map(page => ({
-        ...page,
-        image_url: `https://picsum.photos/400/300?random=${page.page_number}`
-      }));
-    }
-  },
+    }, 
 
   async generatePartOfStory(data: {
     title: string;
@@ -329,11 +185,11 @@ STORYBOOK STYLE REQUIREMENTS:
 - Each page should have engaging text
 - Maintain the user's original narrative and characters as shown in ${data.beginning} and ${data.title}
 - Ensure that each plot point connects logically to the next. For example, a character doesn't need to travel to the location they are already at. Another example is, a character should interact with new characters introduced in the prompt
-- Age-appropriate for children 6-10 years old
+- Ensure that the next generated part of the story contains no profanity, such as sexual content or references, violent or graphic descriptions, strong language or profanity, drug or alcohol references, or scary or disturbing themes. In other words, ensure the story is age-appropriate for children 6-10 years old
 - Wholesome, positive imagery only
 - Ensure the story matches the ${data.biome} environment setting
 
-IMPORTANT: Place MUCH greater emphasis on what she is doing now ${data.continuation} rather than what has already happened ${data.beginning}. The new text should be a continuation of the story, not a repetition of what has already occurred. The next action should be about 
+IMPORTANT: Place MUCH greater emphasis on what she is doing now ${data.continuation} rather than what has already happened ${data.beginning} when generating the next part of the story. The new text should be a continuation of the story, not a repetition of what has already occurred. The next action should be about 
 what happens next in the story based on what is most likely to happen next considering where the character is now.
 
 RETURN REQUIREMENTS:

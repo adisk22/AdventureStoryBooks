@@ -58,7 +58,7 @@ const Index = () => {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading Biome Scribe Studio...</p>
+          <p className="text-muted-foreground">Loading Adventure Story Books...</p>
         </div>
       </div>
     );
@@ -76,8 +76,6 @@ const Index = () => {
         <main className="flex-1 overflow-y-auto">
           <BiomeMap onBiomeClick={handleBiomeClick} biomes={biomes} />
         </main>
-        
-        {user && <StudentSidebar />}
       </div>
 
       <BiomeDetailPanel

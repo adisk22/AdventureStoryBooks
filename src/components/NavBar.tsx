@@ -50,7 +50,7 @@ export const NavBar = ({ selectedClass, onClassChange, onNavigate }: NavBarProps
           <div className="flex items-center gap-2">
             <BookOpen className="w-6 h-6 text-primary" />
             <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Biome Scribe Studio
+              Adventure Story Books
             </h1>
           </div>
 

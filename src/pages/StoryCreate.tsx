@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ProfanityPopup } from '@/components/ProfanityPopup';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -36,6 +37,7 @@ export default function StoryCreate() {
   });
 
 	const [isLoading, setIsLoading] = useState(false);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   const handleNext = async () => {
 		var storyID;
@@ -64,6 +66,13 @@ export default function StoryCreate() {
 		const postPage = async (storyID: number) => {
 			try {
 				setIsLoading(true);
+
+        const containsProfanity = await geminiService.checkProfanity(storyData.title + ", " + storyData.beginning);
+        if (containsProfanity.profanity) {
+          setIsPanelOpen(true);
+          setIsLoading(false);
+          return;
+        }
 
         const generatedPage = await geminiService.generatePartOfStory({
           title: storyData.title,
@@ -149,7 +158,7 @@ export default function StoryCreate() {
             Story Title & Beginning
             </CardTitle>
             <CardDescription>
-                Give your story a title and write the beginning. Your exact words will be transformed into a beautiful storybook!
+                Introduce your characters, set the scene, and start the adventure!
             </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -164,21 +173,28 @@ export default function StoryCreate() {
             </div>
             
             <div className="space-y-2">
-            <Label htmlFor="beginning">Story Beginning</Label>
-            <Textarea
-                id="beginning"
-                placeholder="Write the beginning of your story here... (first 3-4 pages)"
-                value={storyData.beginning}
-                onChange={(e) => handleInputChange('beginning', e.target.value)}
-                rows={8}
-                className="resize-none"
-            />
-            <p className="text-xs text-muted-foreground">
-                Tip: Introduce your characters, set the scene, and start the adventure!
-            </p>
+              <Label htmlFor="beginning">Story Beginning</Label>
+              <Textarea
+                  id="beginning"
+                  placeholder="Write the beginning of your story here... (first 3-4 pages)"
+                  value={storyData.beginning}
+                  onChange={(e) => handleInputChange('beginning', e.target.value)}
+                  rows={8}
+                  className="resize-none"
+              />
+              <p className="text-xs text-muted-foreground">
+              Tip: Gemini will turn your ideas into a one part of a beautiful storybook
+              </p>
             </div>
         </CardContent>
         </Card>
+
+        <ProfanityPopup
+          open={isPanelOpen}
+          onClose={() => {
+            setIsPanelOpen(false);
+          }}
+        />
 
         {/* Navigation */}
 				<div style={{ margin: "2rem 2rem" }}>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ProfanityPopup } from '@/components/ProfanityPopup';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -38,10 +39,12 @@ export default function StoryContinuation() {
   var biomeId = '';
   const [generatedStory, setGeneratedStory] = useState<storyPagesToStory[]>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    setStoryData(prev => ({ ...prev, ['continuation']: "" }));
     setGeneratedStory([]);
 
     const fetchBiome = async () => {
@@ -75,10 +78,18 @@ export default function StoryContinuation() {
 		const postPage = async () => {
 			try {
         setIsLoading(true);
+        
         // Compiling all the story so far into one string
         const fullStoryText = (generatedStory ?? []).reduce((acc, page) => acc + " " + (page.text ?? ""), "");
         
         const storyTitle = await storyService.getStoryTitle(storyIdNum);
+
+        const containsProfanity = await geminiService.checkProfanity(storyData.continuation);
+        if (containsProfanity.profanity) {
+          setIsPanelOpen(true);
+          setIsLoading(false);
+          return;
+        }
 
         const generatedPage = await geminiService.generatePartOfStory({
           title: storyTitle,
@@ -196,7 +207,7 @@ export default function StoryContinuation() {
             Story Continuation
           </CardTitle>
           <CardDescription>
-            Continue your story! Write whatever comes next - your exact words will become part of the storybook.
+            Decide what happens next! What should your characters do? Where will they go next?
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -211,11 +222,18 @@ export default function StoryContinuation() {
               className="resize-none"
             />
             <p className="text-xs text-muted-foreground">
-              Tip: Just write what happens next - Gemini will turn it into a beautiful storybook!
+              Tip: Gemini will turn your ideas into a one part of a beautiful storybook!
             </p>
           </div>
         </CardContent>
       </Card>
+
+      <ProfanityPopup
+        open={isPanelOpen}
+        onClose={() => {
+          setIsPanelOpen(false);
+        }}
+      />
 
         {/* Navigation */}
         <div style={{ margin: "2rem 2rem" }}>

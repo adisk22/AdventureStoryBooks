@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { storyService } from '@/services/newStoryService';
 
-export default function StoryCreation() {
+export default function StoryFinish() {
   const { storyId } = useParams<{ storyId }>();
   const storyIdNum = storyId ? Number(storyId) : null;
   var biomeId = '';
@@ -62,8 +62,7 @@ export default function StoryCreation() {
               <Button 
                 variant="ghost" 
                 size="icon"
-                onClick={() => navigate('/')}
-              >
+                onClick={() => navigate('/')}>
                 <ArrowLeft className="w-4 h-4" />
               </Button>
               <div>

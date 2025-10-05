@@ -57,10 +57,10 @@ export const BiomeMap = ({ onBiomeClick, biomes }: BiomeMapProps) => {
       <div className="max-w-6xl mx-auto">
         <div className="mb-6 text-center">
           <h2 className="text-3xl font-bold mb-2 bg-gradient-primary bg-clip-text text-transparent">
-            Explore Story Biomes
+            Explore Environments
           </h2>
           <p className="text-muted-foreground">
-            Click on an unlocked biome to read stories or write your own adventure!
+            Click on an unlocked biome to start writing stories with that setting!
           </p>
         </div>
         
