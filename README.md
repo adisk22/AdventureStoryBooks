@@ -15,10 +15,9 @@ To build and run AdventureStoryBooks, follow these steps after setting up the pr
   git clone https://github.com/adisk22/AdventureStoryBooks.git
   ```
 2.	Navigate into the project directory
-  	```
-   cd AdventureStoryBooks
-	```
-	
+  ```bash
+  cd AdventureStoryBooks
+  ```
 3. **Install the required dependencies**
    ```bash
    npm install
