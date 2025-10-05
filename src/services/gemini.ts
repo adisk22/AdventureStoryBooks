@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { UnprocessedStory } from '@/models/models';
+import { UnprocessedStory, containsProfanity } from '@/models/models';
+
 
 // Ensure your .env.local has VITE_GEMINI_API_KEY
 const GEMINI_API_KEY = 'AIzaSyDGIyVMpCIhgzRPV8zkgh99uqeGGeTPf6I'
@@ -88,6 +89,40 @@ const mockGeminiResponses = {
 };
 
 export const geminiService = {
+
+async checkProfanity(text: string): Promise<containsProfanity> {
+    if (!GEMINI_API_KEY || !genAI) {
+      console.log('Using mock Gemini Storybook service (no API key provided)');
+      return { profanity: true};
+    }
+
+    try {
+      console.log('📚 Generating storybook with Gemini Storybook API...');
+      
+      // Use Gemini 2.0 Flash for storybook generation
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      
+      // Create a simple prompt that chekks for profanity
+      const storybookPrompt = `Check the following user story for profanity and content deemed inappropriate for children ages 3 to 10. If any is found, return true, otherwise return false.  
+      The user's story should not contain any
+      - Sexual content or references
+      - Violent or graphic descriptions
+      - Strong language or profanity
+      - Drug or alcohol references
+      - Scary or disturbing themes
+      - Any other content not suitable for young children
+
+      Here is the user's story to check for profanity: ${text}
+
+Return as JSON:
+{
+  "containsProfanity": true
+}`;
+    }
+    catch (error) {    }
+
+  }, 
+
   async generateStorybook(data: {
     title: string;
     beginning: string;
