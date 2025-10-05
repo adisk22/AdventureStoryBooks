@@ -17,6 +17,7 @@ To build and run AdventureStoryBooks, follow these steps after setting up the pr
 2.	Navigate into the project directory
   	```bash
    cd AdventureStoryBooks
+	```
 	
 3. **Install the required dependencies**
    ```bash
@@ -29,6 +30,6 @@ To build and run AdventureStoryBooks, follow these steps after setting up the pr
 3. **Open the application in your browser**
    After running the previous command, you'll see a local URL in your terminal. Open that link to view the app.
 
-##Next Steps for the Project
+## Next Steps for the Project
 Students can join their respective classes and access multiple classes through the platform. They begin with a limited selection of story settings, or “biomes,” in which to create their stories. As teachers post educational goals and students complete them, they earn points that can be used to unlock new settings for future stories. In addition, students can view and collaborate on their classmates’ stories, fostering greater classroom engagement and creativity.
    
