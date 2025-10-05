@@ -96,7 +96,7 @@ export const geminiService = {
       }
 
       try {
-        console.log('📚 Generating storybook with Gemini Storybook API...');
+        console.log('Generating storybook with Gemini Storybook API...');
         
         // Use Gemini 2.0 Flash for storybook generation
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -126,7 +126,7 @@ export const geminiService = {
       var text = response.text();
       text = text.replace(/```(json)?/g, "").trim();
       
-      console.log('📥 Received storybook response from Gemini:', text);
+      console.log('Received storybook response from Gemini:', text);
 
       // Parse the JSON response
       let profanityJson: containsProfanity;
@@ -165,7 +165,7 @@ export const geminiService = {
     }
 
     try {
-      console.log('📚 Generating storybook with Gemini Storybook API...');
+      console.log('Generating storybook with Gemini Storybook API...');
       
       // Use Gemini 2.0 Flash for storybook generation
       const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -202,22 +202,22 @@ Return as JSON:
   "text_content": "User's story content formatted for children's book",
 }`;
 
-      console.log('📤 Sending storybook prompt to Gemini...');
+      console.log('Sending storybook prompt to Gemini...');
       const result = await model.generateContent(storybookPrompt);
       const response = await result.response;
       
       var text = response.text();
       text = text.replace(/```(json)?/g, "").trim();
       
-      console.log('📥 Received storybook response from Gemini:', text);
+      console.log('Received storybook response from Gemini:', text);
 
       // Parse the JSON response
       let storybookJson: UnprocessedStory;
       try {
         storybookJson = JSON.parse(text) as UnprocessedStory;
-        console.log("✅ Parsed storybook:", storybookJson);
+        console.log("Parsed storybook:", storybookJson);
       } catch (err) {
-        console.error("❌ Failed to parse Gemini response:", err);
+        console.error("Failed to parse Gemini response:", err);
         throw err;
       }
       // Generate illustrations fo this page using Imagen
@@ -242,7 +242,7 @@ Return as JSON:
   }): Promise<string> {
     
     try {
-      console.log('🎨 Generating illustration for storybook page...');
+      console.log('Generating illustration for storybook page...');
 
       var currentPart = data.continuation == "" ? data.beginning : data.continuation;
 

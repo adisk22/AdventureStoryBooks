@@ -20,15 +20,15 @@ const Index = () => {
     var demoBiomes = [];
 
     const loadBiomes = async () => {
-      console.log('🌍 Loading demo biomes...');
+      console.log('Loading demo biomes...');
       
       try {
         demoBiomes = await storyService.getBiomes();
       } catch (err) {
-        console.error('❌ Error fetching biomes from service:', err);
+        console.error('Error fetching biomes from service:', err);
       }
       
-      console.log('✅ Demo biomes loaded:', demoBiomes);
+      console.log('Demo biomes loaded:', demoBiomes);
       setBiomes(demoBiomes);
       setIsLoading(false);
     };
@@ -37,14 +37,14 @@ const Index = () => {
   }, []);
 
   const handleBiomeClick = (biome: Biome) => {
-    console.log('🖱️ Biome clicked:', biome);
+    console.log('Biome clicked:', biome);
     
     if (biome.unlocked) {
-      console.log('✅ Biome is unlocked, opening panel');
+      console.log('Biome is unlocked, opening panel');
       setSelectedBiome(biome);
       setIsPanelOpen(true);
     } else {
-      console.log('❌ Biome is locked');
+      console.log('Biome is locked');
     }
   };
 
@@ -82,7 +82,7 @@ const Index = () => {
         biome={selectedBiome}
         open={isPanelOpen}
         onClose={() => {
-          console.log('🔒 Closing biome panel');
+          console.log('Closing biome panel');
           setIsPanelOpen(false);
         }}
       />

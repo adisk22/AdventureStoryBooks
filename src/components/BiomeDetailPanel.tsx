@@ -13,15 +13,15 @@ interface BiomeDetailPanelProps {
 export const BiomeDetailPanel = ({ biome, open, onClose }: BiomeDetailPanelProps) => {
   const navigate = useNavigate();
 
-  console.log('🔍 BiomeDetailPanel render:', { biome, open });
+  console.log('BiomeDetailPanel render:', { biome, open });
 
   if (!biome) {
-    console.log('❌ No biome provided');
+    console.log('No biome provided');
     return null;
   }
 
   const handleCreateStory = () => {
-    console.log('📝 Create story clicked for biome:', biome.name);
+    console.log('Create story clicked for biome:', biome.name);
     navigate(`/story-create/${biome.id}`);
     onClose(); // Close the panel when navigating
   };

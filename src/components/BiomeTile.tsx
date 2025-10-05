@@ -16,7 +16,7 @@ interface BiomeTileProps {
 }
 
 export const BiomeTile = ({ biome, onClick }: BiomeTileProps) => {
-  console.log('🖼️ Rendering biome tile:', biome.name, 'Image:', biome.image);
+  console.log('Rendering biome tile:', biome.name, 'Image:', biome.image);
   
   return (
     <button
